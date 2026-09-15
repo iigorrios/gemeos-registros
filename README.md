@@ -97,10 +97,13 @@ faltava para as telas pedidas (migração `gemeos_app_schema_rls_realtime`):
 - `gemeos_babies.photo_url` (foto de perfil);
 - `gemeos_babies.birth_date` (`date`, sem fuso) — base do tempo de vida
   mostrado na Home e no perfil;
-- `gemeos_feedings.breast_side` (`esquerdo` | `direito` | `ambos`), preenchida
-  só quando `method = 'seio'`. Sem `CHECK`, igual às colunas irmãs `method` e
-  `type`, para não quebrar o n8n se ele gravar outro rótulo — **se quiser que o
-  WhatsApp também registre o lado, é essa coluna que o fluxo precisa preencher**;
+- `gemeos_feedings.breast_side` (`esquerdo` | `direito` | `ambos`) e
+  `gemeos_feedings.duration_min` (minutos), preenchidas só quando
+  `method = 'seio'` — no seio o que se registra é o **tempo**, não o volume, e
+  `amount_ml` fica nulo nesses registros (e vice-versa na mamadeira). Sem
+  `CHECK`, igual às colunas irmãs `method` e `type`, para não quebrar o n8n se
+  ele gravar outro rótulo — **se quiser que o WhatsApp também registre lado e
+  tempo, são essas duas colunas que o fluxo precisa preencher**;
 - tabelas `gemeos_growth_measurements` e `gemeos_health_notes`;
 - índices por `(baby_id, data)`;
 - **policies de RLS** para a role `anon` — sem elas a anon key não lia nem

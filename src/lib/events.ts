@@ -26,13 +26,21 @@ export function normalize(kind: EventKind, row: EventRow): TimelineEvent {
   switch (kind) {
     case 'feeding': {
       const r = row as Feeding
-      const method =
-        r.method === 'seio'
-          ? ['Seio', breastLabel(r.breast_side)].filter(Boolean).join(' ')
-          : r.method === 'mamadeira'
-            ? 'Mamadeira'
-            : null
-      const parts = [r.amount_ml != null ? `${formatNumber(r.amount_ml)} ml` : null, method]
+      // No seio mostra o tempo; na mamadeira, o volume.
+      const isSeio = r.method === 'seio'
+      const method = isSeio
+        ? ['Seio', breastLabel(r.breast_side)].filter(Boolean).join(' ')
+        : r.method === 'mamadeira'
+          ? 'Mamadeira'
+          : null
+      const medida = isSeio
+        ? r.duration_min != null
+          ? humanMinutes(r.duration_min)
+          : null
+        : r.amount_ml != null
+          ? `${formatNumber(r.amount_ml)} ml`
+          : null
+      const parts = [medida, method]
       return {
         ...base,
         at: r.occurred_at,

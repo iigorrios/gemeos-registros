@@ -15,10 +15,13 @@ export type Feeding = {
   id: number
   baby_id: number | null
   occurred_at: string
+  /** Só na mamadeira; no seio o que se registra é o tempo. */
   amount_ml: number | null
   method: string | null
   /** Só para mamada no seio; nulo na mamadeira e no que vem do WhatsApp. */
   breast_side: string | null
+  /** Minutos de mamada no seio; nulo na mamadeira. */
+  duration_min: number | null
   notes: string | null
   raw_message_id: number | null
 }

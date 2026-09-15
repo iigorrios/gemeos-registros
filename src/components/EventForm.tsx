@@ -207,27 +207,40 @@ export function EventForm({ open, kind, event, onClose }: Props) {
                   { value: 'mamadeira', label: 'Mamadeira', icon: <BottleIcon width={18} height={18} /> },
                 ]}
               />
-              {values.method === 'seio' && (
-                <SegmentedField<BreastSide>
-                  label="Qual seio"
-                  value={(values.breast_side as BreastSide) || null}
-                  onChange={(v) => set('breast_side', v)}
-                  accentClass="bg-sky-500 text-white"
-                  error={errors.breast_side}
-                  options={[
-                    { value: 'esquerdo', label: 'Esquerdo' },
-                    { value: 'direito', label: 'Direito' },
-                    { value: 'ambos', label: 'Ambos' },
-                  ]}
-                />
+              {/* No seio registra-se o tempo; na mamadeira, o volume. */}
+              {values.method === 'seio' ? (
+                <>
+                  <SegmentedField<BreastSide>
+                    label="Qual seio"
+                    value={(values.breast_side as BreastSide) || null}
+                    onChange={(v) => set('breast_side', v)}
+                    accentClass="bg-sky-500 text-white"
+                    error={errors.breast_side}
+                    options={[
+                      { value: 'esquerdo', label: 'Esquerdo' },
+                      { value: 'direito', label: 'Direito' },
+                      { value: 'ambos', label: 'Ambos' },
+                    ]}
+                  />
+                  <FieldWrap label="Tempo de mamada (min)" error={errors.duration_min}>
+                    <Stepper
+                      value={values.duration_min ?? ''}
+                      onChange={(v) => set('duration_min', v)}
+                      step={5}
+                      suffix="min"
+                    />
+                  </FieldWrap>
+                </>
+              ) : (
+                <FieldWrap label="Quantidade (ml)" error={errors.amount_ml}>
+                  <Stepper
+                    value={values.amount_ml ?? ''}
+                    onChange={(v) => set('amount_ml', v)}
+                    step={10}
+                    suffix="ml"
+                  />
+                </FieldWrap>
               )}
-              <FieldWrap
-                label="Quantidade (ml)"
-                error={errors.amount_ml}
-                hint={values.method === 'seio' ? 'Opcional para mamada no seio.' : undefined}
-              >
-                <Stepper value={values.amount_ml ?? ''} onChange={(v) => set('amount_ml', v)} step={10} suffix="ml" />
-              </FieldWrap>
               <DateTimeField
                 label="Horário"
                 value={values.occurred_at ?? ''}
@@ -525,7 +538,14 @@ function initialValues(kind: EventKind, event?: TimelineEvent): Record<string, s
   if (!event) {
     switch (kind) {
       case 'feeding':
-        return { method: 'mamadeira', breast_side: '', amount_ml: '', occurred_at: nowLocal, notes: '' }
+        return {
+          method: 'mamadeira',
+          breast_side: '',
+          duration_min: '',
+          amount_ml: '',
+          occurred_at: nowLocal,
+          notes: '',
+        }
       case 'diaper':
         return { type: '', occurred_at: nowLocal, notes: '' }
       case 'medication':
@@ -545,6 +565,7 @@ function initialValues(kind: EventKind, event?: TimelineEvent): Record<string, s
       return {
         method: r.method ?? '',
         breast_side: r.breast_side ?? '',
+        duration_min: r.duration_min != null ? String(r.duration_min) : '',
         amount_ml: r.amount_ml != null ? String(r.amount_ml) : '',
         occurred_at: toLocalInput(r.occurred_at),
         notes: r.notes ?? '',
@@ -607,10 +628,17 @@ function validate(kind: EventKind, v: Record<string, string>, babyId: number | n
     case 'feeding': {
       if (!v.method) e.method = 'Escolha o método.'
       requireTime('occurred_at')
-      if (v.method === 'seio' && !v.breast_side) e.breast_side = 'Escolha qual seio.'
-      const amount = parseDecimal(v.amount_ml ?? '')
-      if (v.method === 'mamadeira' && amount == null) e.amount_ml = 'Informe a quantidade em ml.'
-      else if (amount != null && (Number.isNaN(amount) || amount <= 0)) e.amount_ml = 'Use um número maior que zero.'
+      if (v.method === 'seio') {
+        if (!v.breast_side) e.breast_side = 'Escolha qual seio.'
+        const minutos = parseDecimal(v.duration_min ?? '')
+        if (minutos == null) e.duration_min = 'Informe quantos minutos mamou.'
+        else if (Number.isNaN(minutos) || minutos <= 0) e.duration_min = 'Use um número maior que zero.'
+      } else {
+        const amount = parseDecimal(v.amount_ml ?? '')
+        if (v.method === 'mamadeira' && amount == null) e.amount_ml = 'Informe a quantidade em ml.'
+        else if (amount != null && (Number.isNaN(amount) || amount <= 0))
+          e.amount_ml = 'Use um número maior que zero.'
+      }
       break
     }
     case 'diaper':
@@ -657,9 +685,10 @@ function toRow(kind: EventKind, v: Record<string, string>, babyId: number): Reco
         baby_id: babyId,
         occurred_at: inputToUtcISO(v.occurred_at),
         method: v.method,
-        // Só faz sentido no seio: trocar para mamadeira limpa o lado.
+        // Cada método guarda a sua medida; trocar de método limpa a do outro.
         breast_side: v.method === 'seio' ? text(v.breast_side) : null,
-        amount_ml: parseDecimal(v.amount_ml ?? ''),
+        duration_min: v.method === 'seio' ? Math.round(parseDecimal(v.duration_min ?? '') ?? 0) || null : null,
+        amount_ml: v.method === 'seio' ? null : parseDecimal(v.amount_ml ?? ''),
         notes: text(v.notes),
       }
     case 'diaper':

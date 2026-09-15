@@ -14,13 +14,14 @@ import { fetchKind, formatNumber } from '../lib/events'
 import { ALL_KINDS } from '../lib/eventKinds'
 import { errorMessage } from '../lib/supabase'
 import { babyAge, brDayKey, fmtDateLong, fmtTime, humanMinutes, sleepMinutes, timeAgo } from '../lib/time'
-import type { EventKind, SleepEvent, TimelineEvent } from '../lib/types'
+import type { EventKind, Feeding, SleepEvent, TimelineEvent } from '../lib/types'
 
 type Summary = {
   last: Partial<Record<EventKind, TimelineEvent>>
   today: TimelineEvent[]
   openSleep: TimelineEvent | undefined
   totalMl: number
+  totalBreastMin: number
   feedCount: number
   diaperCount: number
 }
@@ -127,8 +128,9 @@ export function Home() {
               )}
             </div>
             <p className="text-sm text-ink-soft">
-              {formatNumber(summary.totalMl)} ml hoje · {summary.feedCount} mamada
-              {summary.feedCount === 1 ? '' : 's'} · {summary.diaperCount} fralda
+              {formatNumber(summary.totalMl)} ml
+              {summary.totalBreastMin > 0 && ` · ${humanMinutes(summary.totalBreastMin)} no seio`} ·{' '}
+              {summary.feedCount} mamada{summary.feedCount === 1 ? '' : 's'} · {summary.diaperCount} fralda
               {summary.diaperCount === 1 ? '' : 's'}
             </p>
           </div>
@@ -249,7 +251,8 @@ function summarize(events: TimelineEvent[], babyId: number | undefined): Summary
     last,
     today,
     openSleep: mine.find((e) => e.kind === 'sleep' && (e.row as SleepEvent).ended_at == null),
-    totalMl: feedings.reduce((sum, e) => sum + Number((e.row as { amount_ml: number | null }).amount_ml ?? 0), 0),
+    totalMl: feedings.reduce((sum, e) => sum + Number((e.row as Feeding).amount_ml ?? 0), 0),
+    totalBreastMin: feedings.reduce((sum, e) => sum + Number((e.row as Feeding).duration_min ?? 0), 0),
     feedCount: feedings.length,
     diaperCount: today.filter((e) => e.kind === 'diaper').length,
   }

@@ -27,6 +27,7 @@ import {
   brLastDayKeys,
   brRangeLastDays,
   fmtDayMonth,
+  humanMinutes,
   timeAgo,
 } from '../lib/time'
 import { useTheme } from '../context/ThemeContext'
@@ -109,11 +110,17 @@ export function Relatorios() {
               {period === 'hoje' ? 'Totais de hoje' : `Totais dos últimos ${period} dias`}
             </h2>
 
-            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <Stat label="Consumo" value={`${formatNumber(totalMl(data.feedings))} ml`} hex={KINDS.feeding.hex} />
+            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+              <Stat label="Mamadeira" value={`${formatNumber(totalMl(data.feedings))} ml`} hex={KINDS.feeding.hex} />
+              <Stat label="Tempo no seio" value={humanMinutes(totalBreastMin(data.feedings))} hex={KINDS.feeding.hex} />
               <Stat label="Mamadas" value={String(data.feedings.length)} hex={KINDS.feeding.hex} />
               <Stat label="Fraldas" value={String(data.diapers.length)} hex={KINDS.diaper.hex} />
               <Stat label="Doses" value={String(data.meds.length)} hex={KINDS.medication.hex} />
+              <Stat
+                label="Sono"
+                value={humanMinutes(totalSleepMin(data.sleeps, PERIOD_DAYS[period], series))}
+                hex={KINDS.sleep.hex}
+              />
             </div>
 
             <div className="mt-4 grid grid-cols-3 gap-3">
@@ -123,8 +130,11 @@ export function Relatorios() {
             </div>
           </section>
 
-          {/* Consumo */}
-          <ChartCard title="Amamentação" subtitle={period === 'hoje' ? 'ml por faixa de horário' : 'ml por dia'}>
+          {/* Consumo — só mamadeira: no seio o registro é de tempo, não de volume */}
+          <ChartCard
+            title="Mamadeira"
+            subtitle={period === 'hoje' ? 'ml por faixa de horário' : 'ml por dia'}
+          >
             <BarChart data={feedingChartData(data.feedings, period, series)}>
               <CartesianGrid vertical={false} stroke={grid} />
               <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fill: axis, fontSize: 11 }} />
@@ -310,6 +320,16 @@ function ChartTooltip({
 
 const totalMl = (feedings: TimelineEvent[]) =>
   feedings.reduce((sum, e) => sum + Number((e.row as Feeding).amount_ml ?? 0), 0)
+
+const totalBreastMin = (feedings: TimelineEvent[]) =>
+  feedings.reduce((sum, e) => sum + Number((e.row as Feeding).duration_min ?? 0), 0)
+
+/** Soma as horas ja repartidas por dia, para nao contar sono em dobro. */
+const totalSleepMin = (sleeps: TimelineEvent[], days: number, series: Baby[]) =>
+  sleepChartData(sleeps, days, series).reduce(
+    (sum, row) => sum + series.reduce((s, b) => s + Number(row[String(b.id)] ?? 0), 0) * 60,
+    0,
+  )
 
 const countDiaper = (diapers: TimelineEvent[], type: string) =>
   diapers.filter((e) => (e.row as DiaperEvent).type === type).length
