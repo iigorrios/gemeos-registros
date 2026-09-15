@@ -22,9 +22,25 @@ const LOGIN_PATH = '/__entrar'
 const LOGOUT_PATH = '/__sair'
 const SESSION_DAYS = 30
 
+/**
+ * Metadados do PWA, servidos sem senha de propósito.
+ *
+ * O Chrome busca o manifest com os cookies OMITIDOS (o fetch do manifest usa
+ * credentials "omit" por padrão). Atrás do porteiro ele recebia a tela de senha
+ * no lugar do JSON, concluía que não havia manifest válido e recusava instalar
+ * o app — era por isso que o atalho saía com o ícone genérico do navegador.
+ *
+ * O que fica público aqui é só o nome do app, as cores e os desenhos dos
+ * ícones. Nenhum dado dos bebês e, principalmente, nenhum pedaço do bundle:
+ * a anon key continua atrás da senha.
+ */
+const PWA_PUBLICO = /^\/(manifest\.webmanifest|icons\/|favicon\.ico$|apple-touch-icon)/
+
 export default async function middleware(request: Request): Promise<Response> {
   const password = process.env.APP_PASSWORD
   const url = new URL(request.url)
+
+  if (PWA_PUBLICO.test(url.pathname)) return next()
 
   // Sem senha configurada o app fica fechado, nunca aberto: um site trancado
   // se resolve com um redeploy, um banco exposto não se desfaz.

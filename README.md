@@ -124,6 +124,13 @@ Como funciona:
   worker e limpa os caches — num app já instalado, só apagar o cookie não
   adiantaria, porque o app continuaria abrindo do cache.
 
+Uma exceção fica de fora do porteiro, de propósito: `manifest.webmanifest` e
+`/icons/*`. O Chrome busca o manifest com os cookies **omitidos**, então atrás
+da senha ele recebia a tela de login no lugar do JSON, concluía que não havia
+manifest válido e **recusava instalar o app**. O que fica público aí é o nome do
+app, as cores e os desenhos dos ícones — nenhum dado dos bebês e nenhum pedaço
+do bundle, que é onde a anon key mora.
+
 ### O que isso resolve e o que não resolve
 
 Resolve o problema principal: a anon key deixa de estar publicada num endereço
