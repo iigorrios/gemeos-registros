@@ -67,6 +67,27 @@ de endereço (`display: standalone`, retrato).
   substitua os arquivos daquela pasta (192, 512 e as versões `maskable`) ou
   edite o desenho no script e rode `npm run icons`.
 
+## Fluxo do WhatsApp (n8n)
+
+[`n8n/gemeos-whatsapp.json`](n8n/gemeos-whatsapp.json) é o workflow pronto para importar
+(Workflows → Import from File). Ele lê o grupo da família, extrai os eventos com
+IA e grava nas mesmas tabelas que o app usa.
+
+- **O prompt do extrator não fica no n8n.** Vive em `gemeos_settings.ai_prompt` e
+  se edita em **Mais → Prompt da IA**; o fluxo busca a versão salva a cada
+  mensagem. O padrão de fábrica está em
+  [`src/lib/defaultPrompt.ts`](src/lib/defaultPrompt.ts).
+  Evite chaves `{ }` no texto: o LangChain as trata como variável de template.
+- **Confirmação no grupo**: depois de gravar, o fluxo responde listando o que
+  entrou no banco, montado a partir das linhas que o Postgres devolveu — não do
+  que a IA entendeu. `BaseUrl` e `token` saem do próprio webhook da UAZAPI, então
+  nenhum segredo fica escrito no workflow.
+- **`raw_message_id`** agora é preenchido: a mensagem bruta é salva antes dos
+  eventos, e o id dela liga cada registro à mensagem de origem — é o que desenha
+  o selo verde do WhatsApp no histórico do app.
+- O JSON é gerado por [`n8n/gerar-workflow.mjs`](n8n/gerar-workflow.mjs), que
+  valida as conexões e falha se algum segredo escapar para dentro do arquivo.
+
 ## Fuso horário
 
 Todo `timestamptz` do banco está em **UTC**; os horários reais são sempre de

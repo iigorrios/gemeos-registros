@@ -1,0 +1,2232 @@
+{
+  "name": "Extração de dados mensagem recebida WhatsApp Igor",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "fcb8a2a2-1930-4983-8a63-b73c331b080b",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        144,
+        3216
+      ],
+      "id": "173861da-b68a-4d36-9107-6fa81081998b",
+      "name": "Webhook",
+      "webhookId": "fcb8a2a2-1930-4983-8a63-b73c331b080b"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "219e24cc-c323-4b32-bfcc-6e813560f441",
+              "leftValue": "={{ $json.body.message.mediaType }}",
+              "rightValue": "text",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        352,
+        3216
+      ],
+      "id": "28d93805-cca9-45c5-9386-dc96b9785a02",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.message.chatid }}",
+                    "rightValue": "557996002100-1541723500@g.us",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "46845c62-4f3a-4a08-abe8-aa99381b7cfc"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Anotações"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "52d11e20-af76-4f62-8112-a94621ad8d35",
+                    "leftValue": "={{ $json.body.message.chatid }}",
+                    "rightValue": "120363207565898712@g.us",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Arregimentação"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "9dc02814-0fca-4361-acaf-0331687787b1",
+                    "leftValue": "={{ $json.body.message.chatid }}",
+                    "rightValue": "120363286953191179@g.us",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Líderes de Célula"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        608,
+        3168
+      ],
+      "id": "d091b976-7e09-4e73-91a9-1b96ff00f6bc",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7a415244-3ada-4cdb-aa44-5980a34ed1eb",
+              "leftValue": "={{ $json.body.message.content }}",
+              "rightValue": "ARREGIMENTAÇÃO",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        800,
+        3312
+      ],
+      "id": "2fd9da7b-8558-4427-880d-7945aae7bfc0",
+      "name": "Texto Contém ARREGIMENTAÇÃO"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7a415244-3ada-4cdb-aa44-5980a34ed1eb",
+              "leftValue": "={{ $json.body.message.content }}",
+              "rightValue": "RELATÓRIO DA CÉLULA",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        816,
+        3664
+      ],
+      "id": "e49fa3fa-9ef0-492c-977e-2331c97bf3c5",
+      "name": "Texto Contém RELATÓRIO DA CÉLULA"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "={{ $('Webhook').item.json.body.message.text }}"
+            },
+            {
+              "role": "system",
+              "content": "Você é um assistente que extrai e estrutura dados de listas de arregimentação enviadas pelo WhatsApp.\n\nAo receber uma mensagem, identifique:\n- O nome do culto (exemplo: Arena, Fé, Domingo Noite)\n- A data (no formato DD/MM/AAAA)\n- O dia da semana correspondente (em português)\n- As subequipes e suas listas de nomes\n\nExemplo de como vai receber os dados:\n\"Arregimentação Arena 11/10/2025\n\nIgor&Bruna \n1. Bruna\n2. Igor \n4. Isa \n5. ⁠⁠ Brendo\n6. ⁠Samuel \n\n\n\nPaulo&Bia \n1. Beatriz \n2. Apolo \n3. Aymmê \n4. Cauan \n5. Ster \n6. Enzo \n7. Isis \n8. Sophia \n9. Amg Sophia \n10. Soso \n11. Amg de Soso \n12. Amg de Soso \n13. Ryan \n14. Hugor \n15. Klauber \n16. Dani \n17. Ster B.\n18. Lara \n19. Maju \n20. Andrey \n21. Shirley \n22. Ana Rosa \n23. Guimarães \n24. Pâmela \n25. Irmã de ster \n26. M. Irmã ster\n\n\nLizandro&Michele \n1. Lizandro \n2. Michele \n3. Matias\n4. ⁠Dani \n\nLucas&Gislayne \n1. Lucas \n2. Gislayne \n3. Lucca \n4. Felipe \n5. Milene \n6. Dequinho \n7. Jessica \n8. Gicelma \n9. Ísis \n10. Lorrany\n11. Lohan \n12. Pedro\n13. Emile \n14. Thomás\n15. Anny \n16. Anderson\n\nRafa&Karol \n1. Rafa\n3. ⁠Karol\n4. ⁠Marcel \n5. ⁠Eduardo \n6. ⁠Guilherme \n7. ⁠outro menino\n8. ⁠outro menino (não sei o nome ) \n9. ⁠Fernanda \n \n\nAndreza \n1. Andreza Lais \n2. Maria Clara \n\nAna Laura \n1. Laura \n2. Giovani \n3. \n\n\nFelipe e Priscila \n1. Priscila  \n2. Duda\n3. Isis\n4. ⁠Sofia\n5. ⁠Sam\n6. ⁠Valentina \n7. Helo\n8. Henrique⁠\n9. Luanque\n10. ⁠Felipe\n11. ⁠irmã de Pri \n12. ⁠Talita \n13. ⁠filha de Aline \n14. ⁠Ane (pastora Ju Sales ) \n15. ⁠amigo de Talita\n16. ⁠Amiga de talita\n\nDébora e Anderson \n1. Débora \n2. Anderson \n\nFabiana e Thomás \n1. Thomás \n\"\n\nRetorne os dados no formato JSON com o seguinte modelo:\n\n{\n  \"data\": \"2025-10-11\",\n  \"dia_semana\": \"sábado\",\n  \"culto\": \"Arena\",\n  \"subequipes\": [\n    {\n      \"nome\": \"Igor & Bruna\",\n      \"quantidade\": 5,\n      \"participantes\": [\"Bruna\", \"Igor\", \"Isa\", \"Brendo\", \"Samuel\"]\n    },\n    {\n      \"nome\": \"Paulo & Bia\",\n      \"quantidade\": 26,\n      \"participantes\": [\"Beatriz\", \"Apolo\", \"Aymmê\", \"...\"]\n    }\n  ]\n}\n\nTenho duas tabelas criadas no Banco de dados, o objetivo é armazenas essas informações nela:\nTABLE public.arregimentacoes (\n  id SERIAL PRIMARY KEY,\n  data DATE NOT NULL,\n  dia_semana TEXT NOT NULL,\n  culto TEXT NOT NULL,\n  subequipe TEXT NOT NULL,\n  quantidade INT NOT NULL,\n  criado_em TIMESTAMP DEFAULT NOW()\n);\n TABLE public.arregimentacao_participantes (\n  id SERIAL PRIMARY KEY,\n  arregimentacao_id INT REFERENCES public.arregimentacoes(id) ON DELETE CASCADE,\n  nome TEXT NOT NULL\n);\n\n\n\n\n\nRegras:\n- Ignore linhas vazias.\n- Considere qualquer linha numerada como um participante.\n- Se o nome da subequipe estiver sozinho em uma linha, use-o como título da seção seguinte.\n- Corrija pequenas variações de digitação, como espaços extras ou acentuação.\n- Sempre devolva o JSON completo, sem comentários, texto adicional ou formatação fora do padrão.\n- Manter o padrão no nome das SubEquipes. Usar o padrão \"nome&nome\"(exemplo: Igor&Bruna)\n- Caso invertam o nome da Sub corrigir o erro.(Exemplo: Se \"Bruna&Igor\" corrigir para \"Igor&Bruna\")\n- Se Terça-Feira, Culto pode chamar também de \"Terça-Feira\".\n- Diferencie \"Domingo Manhã\" de \"Domingo Noite\" no nome do \"culto\"\n- Se a subequipe for \"Rafa&Karol\" pode considerar como \"Rafael&Karol\""
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        1248,
+        3312
+      ],
+      "id": "5233c930-8bd4-4f7c-afdd-094c3299d1a7",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "lbtw7CCqDKEaoffp",
+          "name": "OpenAi Igor Rios"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\ntry {\n  // Output é um array, pega o primeiro item\n  const outputArray = input.output;\n\n  if (!Array.isArray(outputArray) || outputArray.length === 0) {\n    throw new Error(\"Output não é um array ou está vazio\");\n  }\n\n  // Extrai o text do primeiro item do output\n  const textString = outputArray[0]?.content?.[0]?.text;\n\n  if (!textString) {\n    throw new Error(\"Campo 'text' não encontrado em output[0].content[0]\");\n  }\n\n  // Faz o parse do JSON string\n  const text = JSON.parse(textString);\n\n  // Valida se subequipes existe\n  if (!text.subequipes || !Array.isArray(text.subequipes)) {\n    throw new Error(\"Campo 'subequipes' não encontrado ou não é um array\");\n  }\n\n  // Extrai a data e dia da semana\n  const data = text.data;\n  const diaSemana = text.dia_semana;\n  const culto = text.culto;\n\n  // Transforma cada subequipe em um objeto separado\n  const resultado = text.subequipes.map((subequipe) => ({\n    data: data,\n    dia_semana: diaSemana,\n    culto: culto,\n    nome_subequipe: subequipe.nome.replace(/&/g, \"&\"),\n    quantidade: subequipe.quantidade,\n    participantes: subequipe.participantes.join(\", \"),\n    lista_participantes: subequipe.participantes\n  }));\n\n  return resultado;\n} catch (erro) {\n  throw new Error(`Erro ao processar dados: ${erro.message}`);\n}\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1664,
+        3312
+      ],
+      "id": "6a17965c-e818-4b87-89e9-811d0e2798e2",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1952,
+        3312
+      ],
+      "id": "f016670c-9398-4c15-87b1-ac7eb0de7c05",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "arregimentacoes",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "data",
+              "keyValue": "={{ $('Loop Over Items').item.json.data }}"
+            },
+            {
+              "keyName": "subequipe",
+              "keyValue": "={{ $('Loop Over Items').item.json.nome_subequipe }}"
+            },
+            {
+              "keyName": "culto",
+              "keyValue": "={{ $('Loop Over Items').item.json.culto }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2176,
+        3248
+      ],
+      "id": "355c48d5-dd73-4825-9553-4787c64c5595",
+      "name": "Get a row",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "hCxNEoX0lNOsC9qu",
+          "name": "Supabase Igor Rios"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.id }}",
+                    "rightValue": 0,
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "id": "785e0076-d2a0-4c34-b2e2-24f9c98b1485"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Existe"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "ba68f2be-cfee-452e-a55d-40062102ab62",
+                    "leftValue": "={{ $json.id }}",
+                    "rightValue": 0,
+                    "operator": {
+                      "type": "number",
+                      "operation": "notExists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Não Existe"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        2400,
+        3248
+      ],
+      "id": "f888d101-b079-415b-89c4-c1c43c89e74a",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "tableId": "arregimentacoes",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "data",
+              "fieldValue": "={{ $('Loop Over Items').item.json.data }}"
+            },
+            {
+              "fieldId": "dia_semana",
+              "fieldValue": "={{ $('Loop Over Items').item.json.dia_semana }}"
+            },
+            {
+              "fieldId": "culto",
+              "fieldValue": "={{ $('Loop Over Items').item.json.culto }}"
+            },
+            {
+              "fieldId": "subequipe",
+              "fieldValue": "={{ $('Loop Over Items').item.json.nome_subequipe }}"
+            },
+            {
+              "fieldId": "quantidade",
+              "fieldValue": "={{ $('Loop Over Items').item.json.quantidade }}"
+            },
+            {
+              "fieldId": "criado_em",
+              "fieldValue": "={{ $now}} "
+            },
+            {
+              "fieldId": "participantes",
+              "fieldValue": "={{ $('Loop Over Items').item.json.participantes }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2624,
+        3344
+      ],
+      "id": "d8156781-eea2-4c1d-909a-c18306d8b74a",
+      "name": "Create a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "hCxNEoX0lNOsC9qu",
+          "name": "Supabase Igor Rios"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "arregimentacoes",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $json.id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "data",
+              "fieldValue": "={{ $('Loop Over Items').item.json.data }}"
+            },
+            {
+              "fieldId": "dia_semana",
+              "fieldValue": "={{ $('Loop Over Items').item.json.dia_semana }}"
+            },
+            {
+              "fieldId": "culto",
+              "fieldValue": "={{ $('Loop Over Items').item.json.culto }}"
+            },
+            {
+              "fieldId": "subequipe",
+              "fieldValue": "={{ $('Loop Over Items').item.json.nome_subequipe }}"
+            },
+            {
+              "fieldId": "quantidade",
+              "fieldValue": "={{ $('Loop Over Items').item.json.quantidade }}"
+            },
+            {
+              "fieldId": "criado_em",
+              "fieldValue": "={{ $now}} "
+            },
+            {
+              "fieldId": "participantes",
+              "fieldValue": "={{ $('Loop Over Items').item.json.participantes }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2624,
+        3152
+      ],
+      "id": "9ed562d0-da79-495c-85d3-3722e7e532f1",
+      "name": "Update a row1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "hCxNEoX0lNOsC9qu",
+          "name": "Supabase Igor Rios"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me",
+      "typeVersion": 1,
+      "position": [
+        2848,
+        3312
+      ],
+      "id": "01352231-5eee-4f0f-9457-29b41de1f36c"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "={{ $('Webhook').item.json.body.message.text }}"
+            },
+            {
+              "role": "system",
+              "content": "Você é um assistente que extrai e estrutura dados do relatório de células recebidas pelo WhatsApp.\n\nAo receber uma mensagem, identifique:\n- Líder\n- Colíder\n- LT\n- A data (no formato DD/MM/AAAA)\n- Local\n- Tema da Palavra\n- Arregimentação Total\n- Quantidade de Vs\n- Aceitou Jesus\n- Parceiro de Deus arrecadado\n- Pessoas\n\nExemplo de como vai receber os dados:\n\"\n📋 RELATÓRIO DA CÉLULA –\nLíder: Millene e Felipe\nCo-lider: Jessica e Deikson  \nLT: \n\n📅 Data: 23/04/2026\n📍 Local: Barra dos coqueiros \n  📖Tema da Palavra: As circunstâncias não definem a nossa vidas | Filipenses 4:13\n👥 Arregimentação Total: 11\n🙋‍♂️ Quantidade de Vs: 4\n🚪 Aceitou Jesus: \n🐝 Parceiro de Deus arrecadado: R$10,00\nPessoas:\n1. Igor\n2. Bruna\n3. Alice \n\"\n\nRetorne os dados no formato JSON com todas as informações do relatório.\n\nPossuo a seguinte tabela no banco de dados para ser alimentada com esses dados:\ncreate table public.cv_celulas (\n  id bigint generated by default as identity not null,\n  created_at timestamp with time zone not null default now(),\n  lider text null,\n  co_lider text null,\n  lider_treinamento text null,\n  data date null,\n  local text null,\n  tema_palavra text null,\n  arregimentacao_total bigint null,\n  visitantes bigint null,\n  aceitou_jesus bigint null,\n  pdd numeric null,\n  pessoas text[] null,\n  constraint cv_celulas_pkey primary key (id)\n) TABLESPACE pg_default;\n\n\n\nRegras:\n- A coluna \"pessoas\" deve ser alimentada com um formato de array válido.\n- Sempre devolva o JSON completo, sem comentários, texto adicional ou formatação fora do padrão.\n"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        1264,
+        3664
+      ],
+      "id": "48d70223-26c0-4fe3-8b9e-de45947c2b80",
+      "name": "Message a model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "lbtw7CCqDKEaoffp",
+          "name": "OpenAi Igor Rios"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\ntry {\n  const outputArray = input.output;\n  if (!Array.isArray(outputArray) || outputArray.length === 0) {\n    throw new Error(\"Output não é um array ou está vazio\");\n  }\n\n  const mensagem = outputArray.find(\n    (item) => item.role === \"assistant\" && item.status === \"completed\"\n  );\n  if (!mensagem) {\n    throw new Error(\"Nenhuma mensagem de assistant encontrada\");\n  }\n\n  const contentItem = mensagem.content?.find(\n    (c) => c.type === \"output_text\"\n  );\n  if (!contentItem?.text) {\n    throw new Error(\"Campo 'text' não encontrado no content do tipo output_text\");\n  }\n\n  // Remove blocos de markdown antes de parsear\n  const textoLimpo = contentItem.text\n    .replace(/^```(?:json)?\\s*/i, \"\")\n    .replace(/\\s*```$/, \"\")\n    .trim();\n\n  const dados = JSON.parse(textoLimpo);\n\n  // Valida que pessoas é um array\n  const pessoas = Array.isArray(dados.pessoas) ? dados.pessoas : [];\n\n  return [\n    {\n      lider: dados.lider ?? null,\n      co_lider: dados.co_lider ?? null,\n      lider_treinamento: dados.lider_treinamento || null,\n      data: dados.data ?? null,\n      local: dados.local ?? null,\n      tema_palavra: dados.tema_palavra ?? null,\n      arregimentacao_total: dados.arregimentacao_total ?? null,\n      visitantes: dados.visitantes ?? null,\n      aceitou_jesus: dados.aceitou_jesus ?? null,\n      pdd: dados.pdd ?? null,\n      pessoas: pessoas,  // mantido como array para o Supabase (tipo text[] ou jsonb)\n    },\n  ];\n} catch (erro) {\n  throw new Error(`Erro ao processar dados: ${erro.message}`);\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1680,
+        3664
+      ],
+      "id": "4cd53523-6e44-43ad-a02e-e9e8e344de45",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "cv_celulas",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "lider",
+              "keyValue": "={{ $json.lider }}"
+            },
+            {
+              "keyName": "data",
+              "keyValue": "={{ $json.data }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1936,
+        3664
+      ],
+      "id": "1d344e79-3e71-475a-b9b8-16bac56c03e1",
+      "name": "Get a row1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "hCxNEoX0lNOsC9qu",
+          "name": "Supabase Igor Rios"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.id }}",
+                    "rightValue": 0,
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "id": "785e0076-d2a0-4c34-b2e2-24f9c98b1485"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Existe"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "ba68f2be-cfee-452e-a55d-40062102ab62",
+                    "leftValue": "={{ $json.id }}",
+                    "rightValue": 0,
+                    "operator": {
+                      "type": "number",
+                      "operation": "notExists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Não Existe"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        2144,
+        3664
+      ],
+      "id": "6156224c-2b82-4bee-a0a8-7a3908c6e4c8",
+      "name": "Switch2"
+    },
+    {
+      "parameters": {
+        "tableId": "cv_celulas",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lider",
+              "fieldValue": "={{ $('Code in JavaScript').item.json.lider }}"
+            },
+            {
+              "fieldId": "co_lider",
+              "fieldValue": "={{ $('Code in JavaScript').item.json.co_lider }}"
+            },
+            {
+              "fieldId": "lider_treinamento",
+              "fieldValue": "={{ $('Code in JavaScript').item.json.lider_treinamento }}"
+            },
+            {
+              "fieldId": "data",
+              "fieldValue": "={{ $('Code in JavaScript').item.json.data }}"
+            },
+            {
+              "fieldId": "local",
+              "fieldValue": "={{ $('Code in JavaScript').item.json.local }}"
+            },
+            {
+              "fieldId": "tema_palavra",
+              "fieldValue": "={{ $('Code in JavaScript').item.json.tema_palavra }}"
+            },
+            {
+              "fieldId": "arregimentacao_total",
+              "fieldValue": "={{ $('Code in JavaScript').item.json.arregimentacao_total }}"
+            },
+            {
+              "fieldId": "visitantes",
+              "fieldValue": "={{ $('Code in JavaScript').item.json.visitantes }}"
+            },
+            {
+              "fieldId": "aceitou_jesus",
+              "fieldValue": "={{ $('Code in JavaScript').item.json.aceitou_jesus }}"
+            },
+            {
+              "fieldId": "pdd",
+              "fieldValue": "={{ $('Code in JavaScript').item.json.pdd }}"
+            },
+            {
+              "fieldId": "pessoas",
+              "fieldValue": "={{ $('Code in JavaScript').item.json.pessoas }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2432,
+        3760
+      ],
+      "id": "dbe1fa5b-eb20-4fa7-87f2-29c96bb56c27",
+      "name": "Create a row1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "hCxNEoX0lNOsC9qu",
+          "name": "Supabase Igor Rios"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "cv_celulas",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $json.id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "arregimentacao_total",
+              "fieldValue": "={{ $('Code in JavaScript').item.json.arregimentacao_total }}"
+            },
+            {
+              "fieldId": "visitantes",
+              "fieldValue": "={{ $('Code in JavaScript').item.json.visitantes }}"
+            },
+            {
+              "fieldId": "aceitou_jesus",
+              "fieldValue": "={{ $('Code in JavaScript').item.json.aceitou_jesus }}"
+            },
+            {
+              "fieldId": "pdd",
+              "fieldValue": "={{ $('Code in JavaScript').item.json.pdd }}"
+            },
+            {
+              "fieldId": "pessoas",
+              "fieldValue": "={{ $('Code in JavaScript').item.json.pessoas }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2432,
+        3568
+      ],
+      "id": "c327e898-a7dc-484a-965d-29ef8e2218f8",
+      "name": "Update a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "hCxNEoX0lNOsC9qu",
+          "name": "Supabase Igor Rios"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e1",
+              "leftValue": "={{ $json.body.EventType }}",
+              "rightValue": "messages",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b74ce38a-5214-4470-a40b-72780717a352",
+      "name": "Filtra Evento de Mensagem",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        496,
+        4176
+      ],
+      "notes": "A UAZAPI manda vários EventType no mesmo webhook ('chats', 'connection', 'messages'...). Só nos interessa 'messages', que é onde vem o texto real."
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f1",
+              "name": "group_id",
+              "type": "string",
+              "value": "={{ $json.body.message?.chatid || $json.body.chat?.wa_chatid }}"
+            },
+            {
+              "id": "f2",
+              "name": "sender",
+              "type": "string",
+              "value": "={{ $json.body.message?.senderName || $json.body.message?.sender }}"
+            },
+            {
+              "id": "f3",
+              "name": "message_text",
+              "type": "string",
+              "value": "={{ $json.body.message?.text || $json.body.message?.caption || '' }}"
+            },
+            {
+              "id": "f4",
+              "name": "media_type",
+              "type": "string",
+              "value": "={{ $json.body.message?.type || 'text' }}"
+            },
+            {
+              "id": "f5",
+              "name": "message_timestamp",
+              "type": "string",
+              "value": "={{ $json.body.message?.messageTimestamp ? new Date($json.body.message.messageTimestamp).toISOString() : $now.toISO() }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e6dceecb-5464-4ae4-83d5-9e424dca4b1a",
+      "name": "Normalizar Payload",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        736,
+        4128
+      ],
+      "notes": "Baseado no payload real da UAZAPI (EventType='messages'): message.chatid, message.senderName, message.text, message.type, message.messageTimestamp (epoch em ms)."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.group_id }}",
+              "rightValue": "120363421271027196@g.us",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "97295e5a-b58e-4274-adf8-9eb159ca88cd",
+      "name": "Filtra Grupo Gêmeos",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        912,
+        4176
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.message_text }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "de3d0015-65c2-4845-ad47-253d5e3a867c",
+      "name": "Tem Texto?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1152,
+        4176
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "gemeos_raw_messages",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "sender",
+              "fieldValue": "={{ $('Normalizar Payload').item.json.sender }}"
+            },
+            {
+              "fieldId": "message_text",
+              "fieldValue": "={{ '[' + $('Normalizar Payload').item.json.media_type + ' sem legenda]' }}"
+            },
+            {
+              "fieldId": "message_timestamp",
+              "fieldValue": "={{ $('Normalizar Payload').item.json.message_timestamp }}"
+            }
+          ]
+        }
+      },
+      "id": "f594f588-ed1e-4bb5-b330-f993d83e8469",
+      "name": "Salvar Mídia",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        3936
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "hCxNEoX0lNOsC9qu",
+          "name": "Supabase Igor Rios"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "id": "ea714b21-1e97-44b9-b263-115d812a5d27",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1264,
+        4400
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "lbtw7CCqDKEaoffp",
+          "name": "OpenAi Igor Rios"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "gemeos_settings",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "key",
+              "keyValue": "ai_prompt"
+            }
+          ]
+        }
+      },
+      "id": "a1f0c3d2-7b64-4e51-9c28-5f1a02d7b911",
+      "name": "Buscar Prompt",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1264,
+        4176
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "hCxNEoX0lNOsC9qu",
+          "name": "Supabase Igor Rios"
+        }
+      },
+      "notes": "O prompt do extrator vive em gemeos_settings.ai_prompt e se edita no app (Mais > Prompt da IA). Editar lá vale já na próxima mensagem, sem tocar no n8n."
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\"type\":\"object\",\"properties\":{\"eventos\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"tipo\":{\"type\":\"string\",\"enum\":[\"alimentacao\",\"fralda\",\"medicamento\",\"sono\",\"medida\",\"anotacao\",\"outro\"]},\"bebe\":{\"type\":\"string\",\"enum\":[\"leo\",\"clara\",\"ambos\",\"desconhecido\"]},\"horario_texto\":{\"type\":[\"string\",\"null\"]},\"quantidade_ml\":{\"type\":[\"number\",\"null\"]},\"duracao_min\":{\"type\":[\"number\",\"null\"]},\"metodo\":{\"type\":[\"string\",\"null\"],\"enum\":[\"seio\",\"mamadeira\",null]},\"lado_seio\":{\"type\":[\"string\",\"null\"],\"enum\":[\"esquerdo\",\"direito\",\"ambos\",null]},\"fralda_tipo\":{\"type\":[\"string\",\"null\"],\"enum\":[\"xixi\",\"coco\",\"ambos\",null]},\"medicamento_nome\":{\"type\":[\"string\",\"null\"]},\"medicamento_dose\":{\"type\":[\"string\",\"null\"]},\"peso_kg\":{\"type\":[\"number\",\"null\"]},\"altura_cm\":{\"type\":[\"number\",\"null\"]},\"observacao\":{\"type\":[\"string\",\"null\"]},\"acao\":{\"type\":[\"string\",\"null\"],\"enum\":[\"inicio\",\"fim\",null]}},\"required\":[\"tipo\",\"bebe\"]}}},\"required\":[\"eventos\"]}"
+      },
+      "id": "f970ebbf-cf7c-4926-9f1f-f109955274db",
+      "name": "Parser Estruturado",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        1456,
+        4400
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Normalizar Payload').item.json.message_text }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "type": "AIMessagePromptTemplate",
+              "message": "={{ $json.value }}"
+            }
+          ]
+        }
+      },
+      "id": "c2ce8b18-b643-4123-9365-0e17548c91d7",
+      "name": "Agente Extrator",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        1456,
+        4176
+      ],
+      "notes": "O system prompt vem de \"Buscar Prompt\" ($json.value). Atenção: chaves { } no texto do prompt são tratadas como variáveis de template pelo LangChain — evite JSON de exemplo dentro do prompt."
+    },
+    {
+      "parameters": {
+        "tableId": "gemeos_raw_messages",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "sender",
+              "fieldValue": "={{ $('Normalizar Payload').item.json.sender }}"
+            },
+            {
+              "fieldId": "message_text",
+              "fieldValue": "={{ $('Normalizar Payload').item.json.message_text }}"
+            },
+            {
+              "fieldId": "message_timestamp",
+              "fieldValue": "={{ $('Normalizar Payload').item.json.message_timestamp }}"
+            },
+            {
+              "fieldId": "ai_classification",
+              "fieldValue": "={{ JSON.stringify($('Agente Extrator').item.json.output) }}"
+            }
+          ]
+        }
+      },
+      "id": "3f1d9fcc-38e6-447b-835f-8d34658db65c",
+      "name": "Salvar Mensagem Bruta",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1648,
+        4176
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "hCxNEoX0lNOsC9qu",
+          "name": "Supabase Igor Rios"
+        }
+      },
+      "notes": "Agora roda ANTES de processar os eventos: o id desta linha vira o raw_message_id de cada registro, ligando o evento à mensagem que o originou."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Roda DEPOIS de salvar a mensagem bruta, para que cada evento fique ligado\n// à mensagem de origem via raw_message_id (é o que o app usa para marcar o\n// registro como \"veio do WhatsApp\").\nconst raw = $('Normalizar Payload').item.json;\nconst rawMessageId = $json.id || null;\nconst parsed = $('Agente Extrator').item.json.output || { eventos: [] };\n\nconst messageTimestampUTC = DateTime.fromISO(raw.message_timestamp, { zone: 'utc' });\nconst messageTimestampBR = messageTimestampUTC.setZone('America/Sao_Paulo');\n\nconst babyMap = { leo: 1, clara: 2 };\n\nfunction resolveOccurredAt(horarioTexto) {\n  if (!horarioTexto) return messageTimestampUTC.toISO();\n  const match = String(horarioTexto).match(/(\\d{1,2}):(\\d{2})/);\n  if (!match) return messageTimestampUTC.toISO();\n\n  let dt = messageTimestampBR.set({\n    hour: parseInt(match[1], 10),\n    minute: parseInt(match[2], 10),\n    second: 0,\n    millisecond: 0\n  });\n\n  // horário citado no futuro em relação à mensagem => é do dia anterior\n  if (dt > messageTimestampBR) dt = dt.minus({ days: 1 });\n\n  return dt.toUTC().toISO();\n}\n\nconst semAcento = (v) =>\n  String(v || '').toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g, '');\n\n// Rede de segurança: mesmo que a IA escreva de outro jeito, a fralda entra\n// no banco como xixi | coco | ambos — nunca em branco por variação de texto.\nfunction normalizaFralda(valor, observacao) {\n  const s = semAcento(valor) + ' ' + semAcento(observacao);\n  const temXixi = /xixi|pipi|molhad|urin/.test(s);\n  const temCoco = /coco|sujou|evacuou|fezes/.test(s);\n  if (/ambos|os dois|tudo|completa/.test(s) || (temXixi && temCoco)) return 'ambos';\n  if (temCoco) return 'coco';\n  if (temXixi) return 'xixi';\n  return null;\n}\n\nfunction normalizaLado(valor) {\n  const s = semAcento(valor);\n  if (/ambos|dois|os 2/.test(s)) return 'ambos';\n  if (/esq/.test(s)) return 'esquerdo';\n  if (/dir/.test(s)) return 'direito';\n  return null;\n}\n\nconst items = [];\nfor (const evento of (parsed.eventos || [])) {\n  const occurredAt = resolveOccurredAt(evento.horario_texto);\n  const babies = evento.bebe === 'ambos' ? ['leo', 'clara'] : [evento.bebe];\n\n  // ml => mamadeira; tempo => seio. Vale mesmo se a IA não mandar \"metodo\".\n  let metodo = evento.metodo || null;\n  if (!metodo && evento.quantidade_ml != null) metodo = 'mamadeira';\n  if (!metodo && evento.duracao_min != null) metodo = 'seio';\n\n  const ehSeio = metodo === 'seio';\n  const amountMl = ehSeio ? null : (evento.quantidade_ml != null ? evento.quantidade_ml : null);\n  const durationMin = ehSeio ? (evento.duracao_min != null ? Math.round(evento.duracao_min) : null) : null;\n  const ladoSeio = ehSeio ? normalizaLado(evento.lado_seio) : null;\n\n  for (const nick of babies) {\n    items.push({\n      json: {\n        ...evento,\n        baby_id: babyMap[nick] || null,\n        occurred_at: occurredAt,\n        raw_message_id: rawMessageId,\n        metodo: metodo,\n        amount_ml: amountMl,\n        duration_min: durationMin,\n        breast_side: ladoSeio,\n        fralda_tipo: evento.tipo === 'fralda'\n          ? normalizaFralda(evento.fralda_tipo, evento.observacao)\n          : null,\n        peso_kg: evento.peso_kg != null ? evento.peso_kg : null,\n        altura_cm: evento.altura_cm != null ? evento.altura_cm : null,\n        ai_classification: parsed\n      }\n    });\n  }\n}\nreturn items;"
+      },
+      "id": "6a9545bc-a2d4-4244-ad26-abb0bc18c032",
+      "name": "Processar Eventos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1840,
+        4176
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "id": "rt1",
+                    "leftValue": "={{ $json.tipo }}",
+                    "rightValue": "alimentacao",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "alimentacao"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "id": "rt2",
+                    "leftValue": "={{ $json.tipo }}",
+                    "rightValue": "fralda",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "fralda"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "id": "rt3",
+                    "leftValue": "={{ $json.tipo }}",
+                    "rightValue": "medicamento",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "medicamento"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "id": "rt4",
+                    "leftValue": "={{ $json.tipo }}",
+                    "rightValue": "sono",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "sono"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "id": "rt5",
+                    "leftValue": "={{ $json.tipo }}",
+                    "rightValue": "medida",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "medida"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "id": "rt6",
+                    "leftValue": "={{ $json.tipo }}",
+                    "rightValue": "anotacao",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "anotacao"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "id": "5d0e57c3-c77e-4fb9-8c43-a6754fce41a6",
+      "name": "Roteador Tipo Evento",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        2032,
+        4176
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "gemeos_feedings",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "baby_id",
+              "fieldValue": "={{ $json.baby_id }}"
+            },
+            {
+              "fieldId": "occurred_at",
+              "fieldValue": "={{ $json.occurred_at }}"
+            },
+            {
+              "fieldId": "amount_ml",
+              "fieldValue": "={{ $json.amount_ml }}"
+            },
+            {
+              "fieldId": "duration_min",
+              "fieldValue": "={{ $json.duration_min }}"
+            },
+            {
+              "fieldId": "method",
+              "fieldValue": "={{ $json.metodo }}"
+            },
+            {
+              "fieldId": "breast_side",
+              "fieldValue": "={{ $json.breast_side }}"
+            },
+            {
+              "fieldId": "notes",
+              "fieldValue": "={{ $json.observacao }}"
+            },
+            {
+              "fieldId": "raw_message_id",
+              "fieldValue": "={{ $json.raw_message_id }}"
+            }
+          ]
+        }
+      },
+      "id": "e938cf6e-d107-49cb-bbca-1d1dd553dbeb",
+      "name": "Inserir Alimentação",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2256,
+        3952
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "hCxNEoX0lNOsC9qu",
+          "name": "Supabase Igor Rios"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "gemeos_diaper_events",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "baby_id",
+              "fieldValue": "={{ $json.baby_id }}"
+            },
+            {
+              "fieldId": "occurred_at",
+              "fieldValue": "={{ $json.occurred_at }}"
+            },
+            {
+              "fieldId": "type",
+              "fieldValue": "={{ $json.fralda_tipo }}"
+            },
+            {
+              "fieldId": "notes",
+              "fieldValue": "={{ $json.observacao }}"
+            },
+            {
+              "fieldId": "raw_message_id",
+              "fieldValue": "={{ $json.raw_message_id }}"
+            }
+          ]
+        }
+      },
+      "id": "bdb4af6e-046e-4cb5-8f1f-a186fcf8bee3",
+      "name": "Inserir Fralda",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2256,
+        4080
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "hCxNEoX0lNOsC9qu",
+          "name": "Supabase Igor Rios"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "gemeos_medications",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "baby_id",
+              "fieldValue": "={{ $json.baby_id }}"
+            },
+            {
+              "fieldId": "occurred_at",
+              "fieldValue": "={{ $json.occurred_at }}"
+            },
+            {
+              "fieldId": "medication_name",
+              "fieldValue": "={{ $json.medicamento_nome }}"
+            },
+            {
+              "fieldId": "dose",
+              "fieldValue": "={{ $json.medicamento_dose }}"
+            },
+            {
+              "fieldId": "notes",
+              "fieldValue": "={{ $json.observacao }}"
+            },
+            {
+              "fieldId": "raw_message_id",
+              "fieldValue": "={{ $json.raw_message_id }}"
+            }
+          ]
+        }
+      },
+      "id": "a18bb194-3d07-4c77-b183-98de53e971ed",
+      "name": "Inserir Medicamento",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2256,
+        4208
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "hCxNEoX0lNOsC9qu",
+          "name": "Supabase Igor Rios"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "s1",
+              "leftValue": "={{ $json.acao }}",
+              "rightValue": "inicio",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "3ac26c2e-2bc8-4359-b8cf-fdf9c6146842",
+      "name": "Início ou Fim de Sono?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2256,
+        4352
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "gemeos_sleep_events",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "baby_id",
+              "fieldValue": "={{ $json.baby_id }}"
+            },
+            {
+              "fieldId": "started_at",
+              "fieldValue": "={{ $json.occurred_at }}"
+            },
+            {
+              "fieldId": "notes",
+              "fieldValue": "={{ $json.observacao }}"
+            },
+            {
+              "fieldId": "raw_message_id",
+              "fieldValue": "={{ $json.raw_message_id }}"
+            }
+          ]
+        }
+      },
+      "id": "7e83b0c1-3ebd-47bc-8c0f-529b08eaf4bf",
+      "name": "Inserir Início do Sono",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2480,
+        4288
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "hCxNEoX0lNOsC9qu",
+          "name": "Supabase Igor Rios"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "gemeos_sleep_events",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "baby_id",
+              "keyValue": "={{ $json.baby_id }}"
+            }
+          ]
+        }
+      },
+      "id": "edc134dc-bf77-4b10-a0e3-1b050938e3ed",
+      "name": "Buscar Sonos do Bebê",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2480,
+        4432
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "hCxNEoX0lNOsC9qu",
+          "name": "Supabase Igor Rios"
+        }
+      },
+      "notes": "Traz os sonos do bebê; o Code seguinte pega o mais recente que está sem ended_at."
+    },
+    {
+      "parameters": {
+        "jsCode": "const original = $('Roteador Tipo Evento').item.json;\nconst rows = $input.all().map(i => i.json);\nconst abertos = rows.filter(r => !r.ended_at);\n\nif (abertos.length === 0) {\n  // sem \"dormiu\" em aberto para este bebê — nada a encerrar\n  return [];\n}\n\nabertos.sort((a, b) => new Date(b.started_at) - new Date(a.started_at));\nconst maisRecente = abertos[0];\n\nreturn [{\n  json: {\n    id: maisRecente.id,\n    ended_at: original.occurred_at\n  }\n}];"
+      },
+      "id": "c737827d-7ccb-4eb1-bf5d-85fa0d191943",
+      "name": "Achar Sono Mais Recente",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2672,
+        4432
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "gemeos_sleep_events",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $json.id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "ended_at",
+              "fieldValue": "={{ $json.ended_at }}"
+            }
+          ]
+        }
+      },
+      "id": "5fd7c5e0-c9ae-4ab8-8475-2f9388febfb2",
+      "name": "Atualizar Fim do Sono",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2864,
+        4432
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "hCxNEoX0lNOsC9qu",
+          "name": "Supabase Igor Rios"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "gemeos_growth_measurements",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "baby_id",
+              "fieldValue": "={{ $json.baby_id }}"
+            },
+            {
+              "fieldId": "measured_at",
+              "fieldValue": "={{ $json.occurred_at }}"
+            },
+            {
+              "fieldId": "weight_kg",
+              "fieldValue": "={{ $json.peso_kg }}"
+            },
+            {
+              "fieldId": "height_cm",
+              "fieldValue": "={{ $json.altura_cm }}"
+            },
+            {
+              "fieldId": "notes",
+              "fieldValue": "={{ $json.observacao }}"
+            },
+            {
+              "fieldId": "raw_message_id",
+              "fieldValue": "={{ $json.raw_message_id }}"
+            }
+          ]
+        }
+      },
+      "id": "b5c81e44-2a37-4f6e-9d10-71c2a4e8f003",
+      "name": "Inserir Medida",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2256,
+        4496
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "hCxNEoX0lNOsC9qu",
+          "name": "Supabase Igor Rios"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "gemeos_health_notes",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "baby_id",
+              "fieldValue": "={{ $json.baby_id }}"
+            },
+            {
+              "fieldId": "occurred_at",
+              "fieldValue": "={{ $json.occurred_at }}"
+            },
+            {
+              "fieldId": "note",
+              "fieldValue": "={{ $json.observacao || $('Normalizar Payload').item.json.message_text }}"
+            },
+            {
+              "fieldId": "raw_message_id",
+              "fieldValue": "={{ $json.raw_message_id }}"
+            }
+          ]
+        }
+      },
+      "id": "d2e93f17-6c85-4a20-b3f9-08ad51c7e226",
+      "name": "Inserir Anotação",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2256,
+        4624
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "hCxNEoX0lNOsC9qu",
+          "name": "Supabase Igor Rios"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "ac31b70e-9f42-4d58-8e61-2b90c5f4a137",
+      "name": "Registros Gravados",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        3088,
+        4176
+      ],
+      "notes": "Ponto de encontro dos inserts. Recebe as linhas que o banco devolveu, para a confirmação falar do que realmente foi gravado."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Recebe as LINHAS QUE O BANCO DEVOLVEU depois de inserir/atualizar, então a\n// confirmação descreve o que ficou gravado de fato — não o que a IA entendeu.\n// Cada tabela tem colunas próprias, e é por elas que se sabe o tipo do registro.\nconst rows = $input.all().map(i => i.json).filter(r => r && r.id != null);\nif (rows.length === 0) return [];\n\nconst nomes = { 1: 'Léo', 2: 'Clara' };\n\nconst hora = (iso) =>\n  iso ? DateTime.fromISO(iso, { zone: 'utc' }).setZone('America/Sao_Paulo').toFormat('HH:mm') : '';\n\nfunction duracao(min) {\n  const m = Math.max(0, Math.round(min));\n  if (m < 60) return m + 'min';\n  const h = Math.floor(m / 60);\n  const r = m % 60;\n  return r === 0 ? h + 'h' : h + 'h ' + r + 'min';\n}\n\nconst numero = (n) => String(n).replace('.', ',');\n\nconst fralda = { xixi: 'xixi', coco: 'cocô', ambos: 'xixi + cocô' };\n\nconst linhas = [];\nfor (const r of rows) {\n  const quem = nomes[r.baby_id] || 'Bebê';\n\n  if ('note' in r) {\n    linhas.push('• ' + quem + ' — Anotação (' + hora(r.occurred_at) + '): ' + r.note);\n  } else if ('weight_kg' in r) {\n    const partes = [];\n    if (r.weight_kg != null) partes.push(numero(r.weight_kg) + ' kg');\n    if (r.height_cm != null) partes.push(numero(r.height_cm) + ' cm');\n    linhas.push('• ' + quem + ' — Medida: ' + (partes.join(' · ') || 'sem valores'));\n  } else if ('started_at' in r) {\n    if (r.ended_at) {\n      const min = (new Date(r.ended_at) - new Date(r.started_at)) / 60000;\n      linhas.push('• ' + quem + ' — Acordou às ' + hora(r.ended_at) + ' (dormiu ' + duracao(min) + ')');\n    } else {\n      linhas.push('• ' + quem + ' — Dormiu às ' + hora(r.started_at));\n    }\n  } else if ('medication_name' in r) {\n    const dose = r.dose ? ' (' + r.dose + ')' : '';\n    linhas.push('• ' + quem + ' — Remédio: ' + (r.medication_name || 'sem nome') + dose + ' às ' + hora(r.occurred_at));\n  } else if ('type' in r) {\n    const tipo = fralda[r.type] || r.type || 'tipo não informado';\n    linhas.push('• ' + quem + ' — Fralda: ' + tipo + ' às ' + hora(r.occurred_at));\n  } else if ('amount_ml' in r || 'duration_min' in r) {\n    let desc;\n    if (r.method === 'seio') {\n      const lado = r.breast_side ? ' ' + r.breast_side : '';\n      const tempo = r.duration_min != null ? ' por ' + duracao(r.duration_min) : '';\n      desc = 'Seio' + lado + tempo;\n    } else if (r.amount_ml != null) {\n      desc = 'Mamadeira ' + numero(r.amount_ml) + ' ml';\n    } else {\n      desc = 'Mamada';\n    }\n    linhas.push('• ' + quem + ' — ' + desc + ' às ' + hora(r.occurred_at));\n  }\n}\n\nif (linhas.length === 0) return [];\n\nconst texto = '✅ Registrado:\\n' + linhas.join('\\n');\nconst chatid = $('Normalizar Payload').first().json.group_id;\n\nreturn [{ json: { number: chatid, text: texto } }];"
+      },
+      "id": "e7a2d195-3c48-4b06-92f7-6d0184ae35b2",
+      "name": "Montar Confirmação",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3280,
+        4176
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Webhook').item.json.body.BaseUrl }}/send/text",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "token",
+              "value": "={{ $('Webhook').item.json.body.token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ number: $json.number, text: $json.text }) }}",
+        "options": {}
+      },
+      "id": "b8f4c206-5e19-47d3-a0c2-93b7150de4a8",
+      "name": "Enviar Confirmação no Grupo",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3472,
+        4176
+      ],
+      "onError": "continueRegularOutput",
+      "notes": "BaseUrl e token saem do próprio webhook da UAZAPI — nenhum segredo fica escrito no fluxo. Falha aqui não derruba a gravação (onError: continue)."
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Filtra Evento de Mensagem",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Texto Contém ARREGIMENTAÇÃO",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Texto Contém RELATÓRIO DA CÉLULA",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Texto Contém ARREGIMENTAÇÃO",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Texto Contém RELATÓRIO DA CÉLULA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Texto Contém ARREGIMENTAÇÃO": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Texto Contém RELATÓRIO DA CÉLULA": {
+      "main": [
+        [
+          {
+            "node": "Message a model2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Get a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a row": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Update a row1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a row": {
+      "main": [
+        [
+          {
+            "node": "Replace Me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a row1": {
+      "main": [
+        [
+          {
+            "node": "Replace Me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Get a row1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a row1": {
+      "main": [
+        [
+          {
+            "node": "Switch2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch2": {
+      "main": [
+        [
+          {
+            "node": "Update a row",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create a row1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtra Evento de Mensagem": {
+      "main": [
+        [
+          {
+            "node": "Normalizar Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar Payload": {
+      "main": [
+        [
+          {
+            "node": "Filtra Grupo Gêmeos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtra Grupo Gêmeos": {
+      "main": [
+        [
+          {
+            "node": "Tem Texto?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem Texto?": {
+      "main": [
+        [
+          {
+            "node": "Buscar Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Salvar Mídia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Prompt": {
+      "main": [
+        [
+          {
+            "node": "Agente Extrator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente Extrator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser Estruturado": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Agente Extrator",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Extrator": {
+      "main": [
+        [
+          {
+            "node": "Salvar Mensagem Bruta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar Mensagem Bruta": {
+      "main": [
+        [
+          {
+            "node": "Processar Eventos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Processar Eventos": {
+      "main": [
+        [
+          {
+            "node": "Roteador Tipo Evento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Roteador Tipo Evento": {
+      "main": [
+        [
+          {
+            "node": "Inserir Alimentação",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Inserir Fralda",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Inserir Medicamento",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Início ou Fim de Sono?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Inserir Medida",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Inserir Anotação",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Início ou Fim de Sono?": {
+      "main": [
+        [
+          {
+            "node": "Inserir Início do Sono",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Buscar Sonos do Bebê",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Sonos do Bebê": {
+      "main": [
+        [
+          {
+            "node": "Achar Sono Mais Recente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Achar Sono Mais Recente": {
+      "main": [
+        [
+          {
+            "node": "Atualizar Fim do Sono",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inserir Alimentação": {
+      "main": [
+        [
+          {
+            "node": "Registros Gravados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inserir Fralda": {
+      "main": [
+        [
+          {
+            "node": "Registros Gravados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inserir Medicamento": {
+      "main": [
+        [
+          {
+            "node": "Registros Gravados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inserir Início do Sono": {
+      "main": [
+        [
+          {
+            "node": "Registros Gravados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar Fim do Sono": {
+      "main": [
+        [
+          {
+            "node": "Registros Gravados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inserir Medida": {
+      "main": [
+        [
+          {
+            "node": "Registros Gravados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inserir Anotação": {
+      "main": [
+        [
+          {
+            "node": "Registros Gravados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registros Gravados": {
+      "main": [
+        [
+          {
+            "node": "Montar Confirmação",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Montar Confirmação": {
+      "main": [
+        [
+          {
+            "node": "Enviar Confirmação no Grupo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timeSavedMode": "fixed",
+    "timezone": "America/Sao_Paulo",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": -1,
+    "availableInMCP": false,
+    "errorWorkflow": "HRLprHAY6qcU7T1i"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

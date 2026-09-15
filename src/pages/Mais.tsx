@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { BabyAvatar } from '../components/BabyAvatar'
 import {
   CameraIcon,
@@ -15,6 +15,8 @@ import { babyAccent, babyLabel, useBabies } from '../context/BabyContext'
 import { useTheme } from '../context/ThemeContext'
 import { useToast } from '../context/ToastContext'
 import { useOnline } from '../hooks/useOnline'
+import { DEFAULT_AI_PROMPT } from '../lib/defaultPrompt'
+import { AI_PROMPT_KEY, getSetting, saveSetting } from '../lib/settings'
 import { errorMessage, FOTOS_BUCKET, supabase } from '../lib/supabase'
 import { babyAge, fmtBirthDate, todayInput } from '../lib/time'
 import type { Baby } from '../lib/types'
@@ -25,6 +27,7 @@ export function Mais() {
   const { babies, loading, error, reload } = useBabies()
   const { theme, toggle } = useTheme()
   const [editing, setEditing] = useState<Baby | null>(null)
+  const [promptOpen, setPromptOpen] = useState(false)
 
   return (
     <div className="space-y-5">
@@ -70,17 +73,21 @@ export function Mais() {
             <span className="text-sm font-bold text-ink-faint">{theme === 'dark' ? 'Escuro' : 'Claro'}</span>
           </button>
 
-          <div className="flex items-center gap-3 p-4">
+          <button
+            onClick={() => setPromptOpen(true)}
+            className="flex w-full items-center gap-3 p-4 text-left transition active:scale-[.99]"
+          >
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-400/15 dark:text-emerald-300">
               <WhatsappIcon width={20} height={20} />
             </span>
             <div className="min-w-0 flex-1">
-              <p className="font-bold">Registros do WhatsApp</p>
+              <p className="font-bold">Prompt da IA (WhatsApp)</p>
               <p className="text-sm text-ink-soft">
-                As mensagens do grupo continuam entrando sozinhas e aparecem aqui na hora.
+                Ajuste como o robô interpreta as mensagens do grupo. Vale já na próxima mensagem.
               </p>
             </div>
-          </div>
+            <span className="shrink-0 text-sm font-bold text-ink-faint">Editar</span>
+          </button>
 
           {/* Rota do middleware: apaga o cookie e volta para a tela de senha. */}
           <a href="/__sair" className="flex w-full items-center gap-3 p-4 text-left transition active:scale-[.99]">
@@ -111,7 +118,111 @@ export function Mais() {
       </section>
 
       <BabyProfileSheet baby={editing} onClose={() => setEditing(null)} />
+      <PromptSheet open={promptOpen} onClose={() => setPromptOpen(false)} />
     </div>
+  )
+}
+
+/** Editor do prompt que o n8n usa para ler as mensagens do grupo. */
+function PromptSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const toast = useToast()
+  const online = useOnline()
+
+  const [value, setValue] = useState('')
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    if (!open) return
+    setLoading(true)
+    setLoadError(null)
+    getSetting(AI_PROMPT_KEY)
+      .then((saved) => setValue(saved ?? DEFAULT_AI_PROMPT))
+      .catch((err) => setLoadError(errorMessage(err)))
+      .finally(() => setLoading(false))
+  }, [open])
+
+  const handleSave = async () => {
+    if (!value.trim()) {
+      toast('O prompt não pode ficar vazio.', 'error')
+      return
+    }
+    if (!online) {
+      toast('Sem internet — nada foi salvo.', 'error')
+      return
+    }
+    setSaving(true)
+    try {
+      await saveSetting(AI_PROMPT_KEY, value.trim())
+      toast('Prompt salvo. Vale a partir da próxima mensagem do grupo.')
+      onClose()
+    } catch (err) {
+      toast(errorMessage(err), 'error')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  if (!open) return null
+
+  return (
+    <Sheet
+      open
+      onClose={onClose}
+      title="Prompt da IA"
+      footer={
+        <div className="flex gap-3">
+          <button
+            className="btn bg-surface-2 text-ink"
+            onClick={() => setValue(DEFAULT_AI_PROMPT)}
+            disabled={saving || loading}
+          >
+            Restaurar
+          </button>
+          <button
+            className="btn flex-1 bg-sky-500 text-white"
+            onClick={() => void handleSave()}
+            disabled={saving || loading}
+          >
+            {saving ? <Spinner /> : 'Salvar'}
+          </button>
+        </div>
+      }
+    >
+      <div className="space-y-3 pb-2">
+        <p className="text-sm text-ink-soft">
+          É este texto que ensina o robô a ler as mensagens do grupo do WhatsApp. O n8n busca a
+          versão salva a cada mensagem — não precisa mexer no fluxo depois de editar aqui.
+        </p>
+
+        {loading && <LoadingBlock rows={3} />}
+        {loadError && !loading && <ErrorState message={loadError} />}
+
+        {!loading && !loadError && (
+          <>
+            <textarea
+              className="field min-h-[320px] resize-y font-mono text-[13px] leading-relaxed"
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              spellCheck={false}
+            />
+            <p className="text-sm text-ink-faint">
+              {value.length} caracteres. Os nomes dos campos (tipo, bebe, fralda_tipo,
+              quantidade_ml, duracao_min, lado_seio…) precisam continuar iguais: é assim que o
+              fluxo do n8n encontra os dados.
+            </p>
+            {/* O LangChain trata { } como variável de template e quebra a execução. */}
+            {/[{}]/.test(value) && (
+              <p className="rounded-2xl bg-amber-100 px-3.5 py-2.5 text-sm font-semibold text-amber-700 dark:bg-amber-400/15 dark:text-amber-300">
+                Atenção: há chaves <code>{'{ }'}</code> no texto. O n8n as trata como variável e a
+                leitura das mensagens pode falhar — evite colar JSON de exemplo aqui.
+              </p>
+            )}
+          </>
+        )}
+      </div>
+    </Sheet>
   )
 }
 
