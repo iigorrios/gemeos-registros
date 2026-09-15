@@ -192,6 +192,15 @@ export function humanMinutes(totalMinutes: number): string {
   return m === 0 ? `${h}h` : `${h}h ${m}min`
 }
 
+/** Versao curta para caber em legenda: 135 -> "2h15", 45 -> "45min". */
+export function humanMinutesShort(totalMinutes: number): string {
+  const mins = Math.max(0, Math.round(totalMinutes))
+  if (mins < 60) return `${mins}min`
+  const h = Math.floor(mins / 60)
+  const m = mins % 60
+  return m === 0 ? `${h}h` : `${h}h${String(m).padStart(2, '0')}`
+}
+
 /** Duracao de um sono; `ended_at` nulo conta ate agora. */
 export function sleepMinutes(startedAt: string, endedAt: string | null): number {
   const end = endedAt ? new Date(endedAt) : new Date()

@@ -11,6 +11,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import { BabyAvatar } from '../components/BabyAvatar'
 import { BabyTabs } from '../components/BabyTabs'
 import { EventIcon } from '../components/EventIcon'
 import { EmptyState, ErrorState, LoadingBlock } from '../components/ui'
@@ -28,6 +29,7 @@ import {
   brRangeLastDays,
   fmtDayMonth,
   humanMinutes,
+  humanMinutesShort,
   timeAgo,
 } from '../lib/time'
 import { useTheme } from '../context/ThemeContext'
@@ -127,6 +129,45 @@ export function Relatorios() {
               <Stat label="Xixi" value={String(countDiaper(data.diapers, 'xixi'))} hex={KINDS.diaper.hex} />
               <Stat label="Cocô" value={String(countDiaper(data.diapers, 'coco'))} hex={KINDS.diaper.hex} />
               <Stat label="Xixi + Cocô" value={String(countDiaper(data.diapers, 'ambos'))} hex={KINDS.diaper.hex} />
+            </div>
+          </section>
+
+          {/* Intervalo entre mamadas — sempre por bebê: misturar os dois mediria
+              os vãos da fila combinada, que não querem dizer nada. */}
+          <section className="card p-5">
+            <h2 className="font-extrabold">Intervalo entre mamadas</h2>
+            <p className="text-sm text-ink-soft">
+              média de tempo de uma mamada para a seguinte
+              {period === 'hoje' ? ', hoje' : `, nos últimos ${period} dias`}
+            </p>
+
+            <div className="mt-4 space-y-2.5">
+              {series.map((baby) => {
+                const media = avgFeedingInterval(data.feedings, baby.id)
+                const accent = babyAccent(baby)
+                return (
+                  <div key={baby.id} className="rounded-2xl bg-surface-2/60 px-3.5 py-3">
+                    <div className="flex items-center gap-3">
+                      <BabyAvatar baby={baby} size={34} />
+                      <p className={`min-w-0 flex-1 truncate font-extrabold ${accent.text}`}>
+                        {babyLabel(baby)}
+                      </p>
+                      <span
+                        className="shrink-0 text-lg font-extrabold tabular-nums"
+                        style={{ color: media ? accent.hex : undefined }}
+                      >
+                        {media ? humanMinutes(media.media) : '—'}
+                      </span>
+                    </div>
+                    {/* Legenda ocupa a linha toda: dividir espaço com o número quebrava o texto. */}
+                    <p className="mt-1 pl-[46px] text-sm text-ink-soft">
+                      {media
+                        ? `${media.intervalos} intervalo${media.intervalos === 1 ? '' : 's'} · de ${humanMinutesShort(media.menor)} a ${humanMinutesShort(media.maior)}`
+                        : 'precisa de pelo menos duas mamadas no período'}
+                    </p>
+                  </div>
+                )
+              })}
             </div>
           </section>
 
@@ -320,6 +361,34 @@ function ChartTooltip({
 
 const totalMl = (feedings: TimelineEvent[]) =>
   feedings.reduce((sum, e) => sum + Number((e.row as Feeding).amount_ml ?? 0), 0)
+
+/**
+ * Média do tempo entre mamadas consecutivas de UM bebê, dentro do período.
+ *
+ * Nunca some os dois bebês: os eventos vêm intercalados, e o vão entre uma
+ * mamada do Léo e a seguinte da Clara não significa nada.
+ */
+function avgFeedingInterval(
+  feedings: TimelineEvent[],
+  babyId: number,
+): { media: number; menor: number; maior: number; intervalos: number } | null {
+  const momentos = feedings
+    .filter((e) => e.babyId === babyId)
+    .map((e) => new Date(e.at).getTime())
+    .sort((a, b) => a - b)
+
+  if (momentos.length < 2) return null
+
+  const vaos: number[] = []
+  for (let i = 1; i < momentos.length; i++) vaos.push((momentos[i] - momentos[i - 1]) / 60000)
+
+  return {
+    media: vaos.reduce((soma, v) => soma + v, 0) / vaos.length,
+    menor: Math.min(...vaos),
+    maior: Math.max(...vaos),
+    intervalos: vaos.length,
+  }
+}
 
 const totalBreastMin = (feedings: TimelineEvent[]) =>
   feedings.reduce((sum, e) => sum + Number((e.row as Feeding).duration_min ?? 0), 0)
