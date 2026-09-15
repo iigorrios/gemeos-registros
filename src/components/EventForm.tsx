@@ -7,6 +7,7 @@ import { KINDS } from '../lib/eventKinds'
 import { errorMessage, supabase } from '../lib/supabase'
 import { inputToUtcISO, toLocalInput } from '../lib/time'
 import type {
+  BreastSide,
   DiaperEvent,
   DiaperType,
   EventKind,
@@ -206,6 +207,20 @@ export function EventForm({ open, kind, event, onClose }: Props) {
                   { value: 'mamadeira', label: 'Mamadeira', icon: <BottleIcon width={18} height={18} /> },
                 ]}
               />
+              {values.method === 'seio' && (
+                <SegmentedField<BreastSide>
+                  label="Qual seio"
+                  value={(values.breast_side as BreastSide) || null}
+                  onChange={(v) => set('breast_side', v)}
+                  accentClass="bg-sky-500 text-white"
+                  error={errors.breast_side}
+                  options={[
+                    { value: 'esquerdo', label: 'Esquerdo' },
+                    { value: 'direito', label: 'Direito' },
+                    { value: 'ambos', label: 'Ambos' },
+                  ]}
+                />
+              )}
               <FieldWrap
                 label="Quantidade (ml)"
                 error={errors.amount_ml}
@@ -510,7 +525,7 @@ function initialValues(kind: EventKind, event?: TimelineEvent): Record<string, s
   if (!event) {
     switch (kind) {
       case 'feeding':
-        return { method: 'mamadeira', amount_ml: '', occurred_at: nowLocal, notes: '' }
+        return { method: 'mamadeira', breast_side: '', amount_ml: '', occurred_at: nowLocal, notes: '' }
       case 'diaper':
         return { type: '', occurred_at: nowLocal, notes: '' }
       case 'medication':
@@ -529,6 +544,7 @@ function initialValues(kind: EventKind, event?: TimelineEvent): Record<string, s
       const r = event.row as Feeding
       return {
         method: r.method ?? '',
+        breast_side: r.breast_side ?? '',
         amount_ml: r.amount_ml != null ? String(r.amount_ml) : '',
         occurred_at: toLocalInput(r.occurred_at),
         notes: r.notes ?? '',
@@ -591,6 +607,7 @@ function validate(kind: EventKind, v: Record<string, string>, babyId: number | n
     case 'feeding': {
       if (!v.method) e.method = 'Escolha o método.'
       requireTime('occurred_at')
+      if (v.method === 'seio' && !v.breast_side) e.breast_side = 'Escolha qual seio.'
       const amount = parseDecimal(v.amount_ml ?? '')
       if (v.method === 'mamadeira' && amount == null) e.amount_ml = 'Informe a quantidade em ml.'
       else if (amount != null && (Number.isNaN(amount) || amount <= 0)) e.amount_ml = 'Use um número maior que zero.'
@@ -640,6 +657,8 @@ function toRow(kind: EventKind, v: Record<string, string>, babyId: number): Reco
         baby_id: babyId,
         occurred_at: inputToUtcISO(v.occurred_at),
         method: v.method,
+        // Só faz sentido no seio: trocar para mamadeira limpa o lado.
+        breast_side: v.method === 'seio' ? text(v.breast_side) : null,
         amount_ml: parseDecimal(v.amount_ml ?? ''),
         notes: text(v.notes),
       }

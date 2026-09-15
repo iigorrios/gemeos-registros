@@ -3,9 +3,12 @@ export type Baby = {
   name: string
   nickname: string
   photo_url: string | null
+  /** `yyyy-MM-dd`, sem fuso — usada para calcular o tempo de vida. */
+  birth_date: string | null
 }
 
 export type FeedingMethod = 'seio' | 'mamadeira'
+export type BreastSide = 'esquerdo' | 'direito' | 'ambos'
 export type DiaperType = 'xixi' | 'coco' | 'ambos'
 
 export type Feeding = {
@@ -14,6 +17,8 @@ export type Feeding = {
   occurred_at: string
   amount_ml: number | null
   method: string | null
+  /** Só para mamada no seio; nulo na mamadeira e no que vem do WhatsApp. */
+  breast_side: string | null
   notes: string | null
   raw_message_id: number | null
 }

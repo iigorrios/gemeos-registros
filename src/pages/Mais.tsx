@@ -16,6 +16,7 @@ import { useTheme } from '../context/ThemeContext'
 import { useToast } from '../context/ToastContext'
 import { useOnline } from '../hooks/useOnline'
 import { errorMessage, FOTOS_BUCKET, supabase } from '../lib/supabase'
+import { babyAge, fmtBirthDate, todayInput } from '../lib/time'
 import type { Baby } from '../lib/types'
 
 const MAX_PHOTO_BYTES = 5 * 1024 * 1024
@@ -46,6 +47,11 @@ export function Mais() {
               <div className="min-w-0 flex-1">
                 <p className={`font-extrabold ${babyAccent(baby).text}`}>{babyLabel(baby)}</p>
                 <p className="truncate text-sm text-ink-soft">{baby.name}</p>
+                {babyAge(baby.birth_date) && (
+                  <p className="truncate text-sm font-bold text-ink-faint">
+                    {babyAge(baby.birth_date)} · nasceu {fmtBirthDate(baby.birth_date)}
+                  </p>
+                )}
               </div>
               <span className="shrink-0 text-sm font-bold text-ink-faint">Editar</span>
             </button>
@@ -117,6 +123,7 @@ function BabyProfileSheet({ baby, onClose }: { baby: Baby | null; onClose: () =>
 
   const [name, setName] = useState('')
   const [nickname, setNickname] = useState('')
+  const [birthDate, setBirthDate] = useState('')
   const [photoUrl, setPhotoUrl] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -128,6 +135,7 @@ function BabyProfileSheet({ baby, onClose }: { baby: Baby | null; onClose: () =>
     setReady(baby.id)
     setName(baby.name)
     setNickname(baby.nickname)
+    setBirthDate(baby.birth_date ?? '')
     setPhotoUrl(baby.photo_url)
   }
 
@@ -181,6 +189,10 @@ function BabyProfileSheet({ baby, onClose }: { baby: Baby | null; onClose: () =>
       setNameError('Informe o apelido.')
       return
     }
+    if (birthDate && birthDate > todayInput()) {
+      setNameError('A data de nascimento não pode ser no futuro.')
+      return
+    }
     if (!online) {
       toast('Sem internet — nada foi salvo.', 'error')
       return
@@ -190,7 +202,12 @@ function BabyProfileSheet({ baby, onClose }: { baby: Baby | null; onClose: () =>
     try {
       const { error: err } = await supabase
         .from('gemeos_babies')
-        .update({ name: name.trim(), nickname: nickname.trim().toLowerCase(), photo_url: photoUrl })
+        .update({
+          name: name.trim(),
+          nickname: nickname.trim().toLowerCase(),
+          birth_date: birthDate || null,
+          photo_url: photoUrl,
+        })
         .eq('id', baby.id)
       if (err) {
         // nickname tem índice único no banco.
@@ -282,6 +299,22 @@ function BabyProfileSheet({ baby, onClose }: { baby: Baby | null; onClose: () =>
               setNameError('')
             }}
             placeholder="Ex: leo"
+          />
+        </FieldWrap>
+
+        <FieldWrap
+          label="Data de nascimento"
+          hint={babyAge(birthDate) ? `Hoje: ${babyAge(birthDate)}` : 'Usada para mostrar o tempo de vida.'}
+        >
+          <input
+            type="date"
+            className="field"
+            value={birthDate}
+            max={todayInput()}
+            onChange={(e) => {
+              setBirthDate(e.target.value)
+              setNameError('')
+            }}
           />
         </FieldWrap>
 

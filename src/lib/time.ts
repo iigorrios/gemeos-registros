@@ -93,6 +93,87 @@ export function brDayBounds(dayKey: string): { start: Date; end: Date } {
 /** Hora do dia (0-23) em Brasilia. */
 export const brHour = (iso: string | Date) => Number(fmt(iso, 'H'))
 
+/**
+ * Tempo de vida a partir de `yyyy-MM-dd`, contado em dias civis de Brasilia.
+ *
+ * A data de nascimento e um `date` puro no banco: nao tem hora nem fuso. Por
+ * isso a conta e feita com os numeros do calendario, sem passar por Date com
+ * fuso — senao um bebe nascido dia 1 poderia aparecer com um dia a mais ou a
+ * menos dependendo do relogio do aparelho.
+ */
+export function babyAge(birthDate: string | null | undefined): string | null {
+  if (!birthDate) return null
+
+  const [ano, mes, dia] = birthDate.split('-').map(Number)
+  if (!ano || !mes || !dia) return null
+
+  const hoje = fmt(new Date(), 'yyyy-MM-dd').split('-').map(Number)
+  const [anoHoje, mesHoje, diaHoje] = hoje
+
+  // Dias corridos, para os primeiros meses.
+  const umDia = 86400000
+  const nascimento = Date.UTC(ano, mes - 1, dia)
+  const agora = Date.UTC(anoHoje, mesHoje - 1, diaHoje)
+  const dias = Math.floor((agora - nascimento) / umDia)
+
+  if (dias < 0) return null
+  if (dias === 0) return 'nasceu hoje'
+
+  // Nas primeiras semanas a conta que importa e a de dias, entao ela e o
+  // rotulo principal. Depois vira semanas/meses, mas o total em dias segue
+  // entre parenteses ate o primeiro ano — e o numero que a pediatra pergunta.
+  const totalDias = ` (${plural(dias, 'dia', 'dias')})`
+  const comTotal = (texto: string) => (dias < 365 ? texto + totalDias : texto)
+
+  if (dias < 14) return plural(dias, 'dia', 'dias')
+  if (dias < 60) {
+    const semanas = Math.floor(dias / 7)
+    const resto = dias % 7
+    return comTotal(
+      resto === 0
+        ? plural(semanas, 'semana', 'semanas')
+        : `${plural(semanas, 'semana', 'semanas')} e ${plural(resto, 'dia', 'dias')}`,
+    )
+  }
+
+  // Meses completos de calendario + dias restantes.
+  let meses = (anoHoje - ano) * 12 + (mesHoje - mes)
+  if (diaHoje < dia) meses--
+
+  // Ultimo "aniversario mensal": o dia do nascimento, `meses` meses depois.
+  // Quem nasceu dia 31 gruda no ultimo dia dos meses de 30 — senao a data
+  // estouraria para o mes seguinte e a conta perderia um dia.
+  const alvo = mes - 1 + meses
+  const alvoAno = ano + Math.floor(alvo / 12)
+  const alvoMes = ((alvo % 12) + 12) % 12
+  const ultimoDiaDoMes = new Date(Date.UTC(alvoAno, alvoMes + 1, 0)).getUTCDate()
+  const aniversario = Date.UTC(alvoAno, alvoMes, Math.min(dia, ultimoDiaDoMes))
+  const restoDias = Math.floor((agora - aniversario) / umDia)
+
+  if (meses < 24) {
+    return comTotal(
+      restoDias === 0
+        ? plural(meses, 'mês', 'meses')
+        : `${plural(meses, 'mês', 'meses')} e ${plural(restoDias, 'dia', 'dias')}`,
+    )
+  }
+
+  const anos = Math.floor(meses / 12)
+  const restoMeses = meses % 12
+  return restoMeses === 0
+    ? plural(anos, 'ano', 'anos')
+    : `${plural(anos, 'ano', 'anos')} e ${plural(restoMeses, 'mês', 'meses')}`
+}
+
+const plural = (n: number, um: string, varios: string) => `${n} ${n === 1 ? um : varios}`
+
+/** `yyyy-MM-dd` -> `dd/MM/yyyy`, sem passar por fuso. */
+export function fmtBirthDate(birthDate: string | null | undefined): string | null {
+  if (!birthDate) return null
+  const [ano, mes, dia] = birthDate.split('-')
+  return ano && mes && dia ? `${dia}/${mes}/${ano}` : null
+}
+
 /** "há 2h 15min" / "agora" — distancia entre um instante passado e agora. */
 export function timeAgo(iso: string | Date | null | undefined): string {
   if (!iso) return '—'

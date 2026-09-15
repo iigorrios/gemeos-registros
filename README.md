@@ -95,6 +95,12 @@ O app usa as tabelas `gemeos_*` que já existiam. Foi preciso completar o que
 faltava para as telas pedidas (migração `gemeos_app_schema_rls_realtime`):
 
 - `gemeos_babies.photo_url` (foto de perfil);
+- `gemeos_babies.birth_date` (`date`, sem fuso) — base do tempo de vida
+  mostrado na Home e no perfil;
+- `gemeos_feedings.breast_side` (`esquerdo` | `direito` | `ambos`), preenchida
+  só quando `method = 'seio'`. Sem `CHECK`, igual às colunas irmãs `method` e
+  `type`, para não quebrar o n8n se ele gravar outro rótulo — **se quiser que o
+  WhatsApp também registre o lado, é essa coluna que o fluxo precisa preencher**;
 - tabelas `gemeos_growth_measurements` e `gemeos_health_notes`;
 - índices por `(baby_id, data)`;
 - **policies de RLS** para a role `anon` — sem elas a anon key não lia nem

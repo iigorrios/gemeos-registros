@@ -26,7 +26,12 @@ export function normalize(kind: EventKind, row: EventRow): TimelineEvent {
   switch (kind) {
     case 'feeding': {
       const r = row as Feeding
-      const method = r.method === 'seio' ? 'Seio' : r.method === 'mamadeira' ? 'Mamadeira' : null
+      const method =
+        r.method === 'seio'
+          ? ['Seio', breastLabel(r.breast_side)].filter(Boolean).join(' ')
+          : r.method === 'mamadeira'
+            ? 'Mamadeira'
+            : null
       const parts = [r.amount_ml != null ? `${formatNumber(r.amount_ml)} ml` : null, method]
       return {
         ...base,
@@ -93,6 +98,10 @@ export function normalize(kind: EventKind, row: EventRow): TimelineEvent {
 
 export const diaperLabel = (type: string | null) =>
   type === 'xixi' ? 'Xixi' : type === 'coco' ? 'Cocô' : type === 'ambos' ? 'Xixi + Cocô' : null
+
+/** "esquerdo" -> "esquerdo"; nulo quando a mamada não registrou o lado. */
+export const breastLabel = (side: string | null) =>
+  side === 'esquerdo' ? 'esquerdo' : side === 'direito' ? 'direito' : side === 'ambos' ? '(ambos)' : null
 
 export function formatNumber(n: number): string {
   return new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 3 }).format(n)

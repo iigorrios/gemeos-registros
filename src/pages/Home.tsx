@@ -13,7 +13,7 @@ import { useTicker } from '../hooks/useOnline'
 import { fetchKind, formatNumber } from '../lib/events'
 import { ALL_KINDS } from '../lib/eventKinds'
 import { errorMessage } from '../lib/supabase'
-import { brDayKey, fmtDateLong, fmtTime, humanMinutes, sleepMinutes, timeAgo } from '../lib/time'
+import { babyAge, brDayKey, fmtDateLong, fmtTime, humanMinutes, sleepMinutes, timeAgo } from '../lib/time'
 import type { EventKind, SleepEvent, TimelineEvent } from '../lib/types'
 
 type Summary = {
@@ -81,13 +81,14 @@ export function Home() {
 
       {/* Estado do sono */}
       {summary.openSleep ? (
-        <div className="card flex items-center gap-3 border-indigo-200 bg-indigo-50 p-4 dark:border-indigo-400/20 dark:bg-indigo-500/10">
-          <EventIcon kind="sleep" />
+        <div className="card flex items-center gap-2.5 border-indigo-200 bg-indigo-50 p-4 dark:border-indigo-400/20 dark:bg-indigo-500/10">
+          <EventIcon kind="sleep" size="sm" />
+          {/* Sem truncate: melhor quebrar em duas linhas do que esconder o horário. */}
           <div className="min-w-0 flex-1">
-            <p className="truncate font-extrabold text-indigo-600 dark:text-indigo-300">
+            <p className="font-extrabold leading-tight text-indigo-600 dark:text-indigo-300">
               {babyLabel(focus)} está dormindo
             </p>
-            <p className="truncate text-sm text-ink-soft">
+            <p className="text-sm text-ink-soft">
               Desde {fmtTime(summary.openSleep.at)} ·{' '}
               {humanMinutes(sleepMinutes((summary.openSleep.row as SleepEvent).started_at, null))}
             </p>
@@ -95,7 +96,7 @@ export function Home() {
           <button
             onClick={() => void handleEndSleep()}
             disabled={endingSleep}
-            className="btn shrink-0 gap-1.5 bg-indigo-500 px-3 py-2.5 text-sm text-white"
+            className="btn shrink-0 gap-1.5 self-center bg-indigo-500 px-3 py-2.5 text-sm text-white"
           >
             {endingSleep ? <Spinner className="h-4 w-4" /> : <StopIcon width={16} height={16} />}
             Encerrar
@@ -119,7 +120,12 @@ export function Home() {
         <header className="flex items-center gap-3">
           <BabyAvatar baby={focus} size={44} ring />
           <div className="min-w-0 flex-1">
-            <h2 className={`text-lg font-extrabold ${accent.text}`}>{babyLabel(focus)}</h2>
+            <div className="flex flex-wrap items-baseline gap-x-2">
+              <h2 className={`text-lg font-extrabold ${accent.text}`}>{babyLabel(focus)}</h2>
+              {babyAge(focus?.birth_date) && (
+                <span className="text-sm font-bold text-ink-faint">{babyAge(focus?.birth_date)}</span>
+              )}
+            </div>
             <p className="text-sm text-ink-soft">
               {formatNumber(summary.totalMl)} ml hoje · {summary.feedCount} mamada
               {summary.feedCount === 1 ? '' : 's'} · {summary.diaperCount} fralda
@@ -132,6 +138,7 @@ export function Home() {
           <LastRow kind="feeding" label="Última mamada" event={summary.last.feeding} />
           <LastRow kind="diaper" label="Última fralda" event={summary.last.diaper} />
           <LastRow kind="medication" label="Último remédio" event={summary.last.medication} />
+          <LastRow kind="note" label="Última anotação" event={summary.last.note} />
         </div>
       </section>
 
@@ -200,7 +207,8 @@ function LastRow({ kind, label, event }: { kind: EventKind; label: string; event
           {event && <span className="shrink-0 text-xs font-bold text-ink-faint">{timeAgo(event.at)}</span>}
         </div>
         {event ? (
-          <p className="font-extrabold">
+          // line-clamp porque uma anotação pode ser bem mais longa que "90 ml".
+          <p className="line-clamp-2 font-extrabold">
             {fmtTime(event.at)}
             {event.detail && <span className="font-semibold text-ink-soft"> · {event.detail}</span>}
           </p>
