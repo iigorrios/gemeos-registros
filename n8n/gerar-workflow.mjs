@@ -4,6 +4,11 @@ import { dirname } from 'node:path'
 const OUT = process.argv[2]
 const ORIG = JSON.parse(readFileSync(process.argv[3], 'utf8'))
 
+// Marca as mensagens que o próprio robô manda. Aparece no texto enviado E no
+// filtro que ignora essas mensagens — é o mesmo valor nos dois lugares, de
+// propósito: se mudar aqui, o filtro continua batendo.
+const MARCADOR = '✅ Registrado:'
+
 const SUPA = { supabaseApi: { id: 'hCxNEoX0lNOsC9qu', name: 'Supabase Igor Rios' } }
 const OPENAI = { openAiApi: { id: 'lbtw7CCqDKEaoffp', name: 'OpenAi Igor Rios' } }
 
@@ -126,7 +131,9 @@ return [{
   }
 }];`
 
-const codeMontarConfirmacao = `// Recebe as LINHAS QUE O BANCO DEVOLVEU depois de inserir/atualizar, então a
+const codeMontarConfirmacao = `const MARCADOR_CONFIRMACAO = ${JSON.stringify(MARCADOR)};
+
+// Recebe as LINHAS QUE O BANCO DEVOLVEU depois de inserir/atualizar, então a
 // confirmação descreve o que ficou gravado de fato — não o que a IA entendeu.
 // Cada tabela tem colunas próprias, e é por elas que se sabe o tipo do registro.
 const rows = $input.all().map(i => i.json).filter(r => r && r.id != null);
@@ -190,10 +197,34 @@ for (const r of rows) {
 
 if (linhas.length === 0) return [];
 
-const texto = '✅ Registrado:\\n' + linhas.join('\\n');
+const texto = MARCADOR_CONFIRMACAO + '\\n' + linhas.join('\\n');
 const chatid = $('Normalizar Payload').first().json.group_id;
 
 return [{ json: { number: chatid, text: texto } }];`
+
+/** Normalizar Payload com dois campos novos: id da mensagem e origem. */
+function normalizarPayload() {
+  const node = orig('Normalizar Payload')
+  node.parameters.assignments.assignments.push(
+    {
+      id: 'f6',
+      name: 'wa_message_id',
+      type: 'string',
+      value: "={{ $json.body.message?.messageid || $json.body.message?.id || '' }}",
+    },
+    {
+      // A UAZAPI marca com true o que saiu pela API — ou seja, o próprio robô.
+      // Não dá para usar fromMe: as mensagens do Igor também vêm com fromMe.
+      id: 'f7',
+      name: 'from_api',
+      type: 'boolean',
+      value: '={{ $json.body.message?.wasSentByApi === true }}',
+    },
+  )
+  node.notes =
+    'wa_message_id evita reprocessar a mesma mensagem; from_api marca o que o próprio robô enviou.'
+  return node
+}
 
 /* ── Nós ──────────────────────────────────────────────────────────── */
 
@@ -221,11 +252,102 @@ const nodes = [
 
   // — trilho dos gêmeos —
   orig('Filtra Evento de Mensagem'),
-  orig('Normalizar Payload'),
+  normalizarPayload(),
   orig('Filtra Grupo Gêmeos'),
   orig('Tem Texto?'),
   orig('Salvar Mídia'),
   orig('OpenAI Chat Model'),
+
+  {
+    // Barreira 1 contra realimentação: a confirmação é enviada no MESMO grupo
+    // que o fluxo escuta, então a UAZAPI dispara webhook para ela também. Sem
+    // este filtro o robô lê a própria confirmação, entende como mamada, grava
+    // de novo e confirma de novo — loop infinito.
+    //
+    // O teste é `wasSentByApi`, não `fromMe`: as mensagens do Igor também vêm
+    // com fromMe true, porque a instância é o número dele.
+    parameters: {
+      conditions: {
+        options: { caseSensitive: true, leftValue: '', typeValidation: 'strict', version: 2 },
+        conditions: [
+          {
+            id: 'loop1',
+            leftValue: '={{ $json.from_api }}',
+            rightValue: false,
+            operator: { type: 'boolean', operation: 'false', singleValue: true },
+          },
+          {
+            id: 'loop2',
+            leftValue: '={{ $json.message_text }}',
+            rightValue: MARCADOR,
+            operator: { type: 'string', operation: 'notContains' },
+          },
+        ],
+        combinator: 'and',
+      },
+      options: {},
+    },
+    id: 'c4e81b30-9a57-4d62-8f13-6e027b95da41',
+    name: 'Não é Mensagem do Robô',
+    type: 'n8n-nodes-base.if',
+    typeVersion: 2.2,
+    position: [1072, 4176],
+    notes:
+      'Corta o loop de realimentação: ignora o que saiu pela API e qualquer texto que contenha o marcador da confirmação. As duas condições são redundantes de propósito.',
+  },
+
+  {
+    parameters: {
+      operation: 'get',
+      tableId: 'gemeos_raw_messages',
+      filters: {
+        conditions: [
+          { keyName: 'wa_message_id', keyValue: "={{ $('Normalizar Payload').item.json.wa_message_id }}" },
+        ],
+      },
+    },
+    id: 'f0a91c24-73d8-4b65-9e07-1a5c38bd6902',
+    name: 'Já Processada?',
+    type: 'n8n-nodes-base.supabase',
+    typeVersion: 1,
+    position: [1264, 4176],
+    alwaysOutputData: true,
+    credentials: SUPA,
+    notes:
+      'Barreira 2: se a UAZAPI reenviar o mesmo webhook, a mensagem já está em gemeos_raw_messages e o fluxo para aqui.',
+  },
+
+  {
+    parameters: {
+      rules: {
+        values: [
+          {
+            conditions: {
+              options: { caseSensitive: true, leftValue: '', typeValidation: 'loose', version: 3 },
+              conditions: [
+                {
+                  id: 'dup1',
+                  leftValue: '={{ $json.id }}',
+                  rightValue: 0,
+                  operator: { type: 'number', operation: 'notExists', singleValue: true },
+                },
+              ],
+              combinator: 'and',
+            },
+            renameOutput: true,
+            outputKey: 'Nova',
+          },
+        ],
+      },
+      looseTypeValidation: true,
+      options: {},
+    },
+    id: 'aa1d5e83-4c96-4b70-85f2-0c9e37ab1d55',
+    name: 'Mensagem Nova?',
+    type: 'n8n-nodes-base.switch',
+    typeVersion: 3.4,
+    position: [1456, 4176],
+  },
 
   {
     parameters: {
@@ -237,7 +359,7 @@ const nodes = [
     name: 'Buscar Prompt',
     type: 'n8n-nodes-base.supabase',
     typeVersion: 1,
-    position: [1264, 4176],
+    position: [1648, 4176],
     credentials: SUPA,
     notes:
       'O prompt do extrator vive em gemeos_settings.ai_prompt e se edita no app (Mais > Prompt da IA). Editar lá vale já na próxima mensagem, sem tocar no n8n.',
@@ -283,7 +405,7 @@ const nodes = [
     name: 'Parser Estruturado',
     type: '@n8n/n8n-nodes-langchain.outputParserStructured',
     typeVersion: 1.2,
-    position: [1456, 4400],
+    position: [1840, 4400],
   },
 
   {
@@ -299,7 +421,7 @@ const nodes = [
     name: 'Agente Extrator',
     type: '@n8n/n8n-nodes-langchain.chainLlm',
     typeVersion: 1.5,
-    position: [1456, 4176],
+    position: [1840, 4176],
     notes:
       'O system prompt vem de "Buscar Prompt" ($json.value). Atenção: chaves { } no texto do prompt são tratadas como variáveis de template pelo LangChain — evite JSON de exemplo dentro do prompt.',
   },
@@ -319,6 +441,10 @@ const nodes = [
             fieldId: 'ai_classification',
             fieldValue: "={{ JSON.stringify($('Agente Extrator').item.json.output) }}",
           },
+          {
+            fieldId: 'wa_message_id',
+            fieldValue: "={{ $('Normalizar Payload').item.json.wa_message_id }}",
+          },
         ],
       },
     },
@@ -326,7 +452,7 @@ const nodes = [
     name: 'Salvar Mensagem Bruta',
     type: 'n8n-nodes-base.supabase',
     typeVersion: 1,
-    position: [1648, 4176],
+    position: [2032, 4176],
     credentials: SUPA,
     notes:
       'Agora roda ANTES de processar os eventos: o id desta linha vira o raw_message_id de cada registro, ligando o evento à mensagem que o originou.',
@@ -338,7 +464,7 @@ const nodes = [
     name: 'Processar Eventos',
     type: 'n8n-nodes-base.code',
     typeVersion: 2,
-    position: [1840, 4176],
+    position: [2224, 4176],
   },
 
   {
@@ -369,7 +495,7 @@ const nodes = [
     name: 'Roteador Tipo Evento',
     type: 'n8n-nodes-base.switch',
     typeVersion: 3.2,
-    position: [2032, 4176],
+    position: [2416, 4176],
   },
 
   {
@@ -646,7 +772,10 @@ const connections = {
   'Filtra Evento de Mensagem': { main: [[to('Normalizar Payload')]] },
   'Normalizar Payload': { main: [[to('Filtra Grupo Gêmeos')]] },
   'Filtra Grupo Gêmeos': { main: [[to('Tem Texto?')]] },
-  'Tem Texto?': { main: [[to('Buscar Prompt')], [to('Salvar Mídia')]] },
+  'Tem Texto?': { main: [[to('Não é Mensagem do Robô')], [to('Salvar Mídia')]] },
+  'Não é Mensagem do Robô': { main: [[to('Já Processada?')], []] },
+  'Já Processada?': { main: [[to('Mensagem Nova?')]] },
+  'Mensagem Nova?': { main: [[to('Buscar Prompt')]] },
   'Buscar Prompt': { main: [[to('Agente Extrator')]] },
   'OpenAI Chat Model': { ai_languageModel: [[{ node: 'Agente Extrator', type: 'ai_languageModel', index: 0 }]] },
   'Parser Estruturado': { ai_outputParser: [[{ node: 'Agente Extrator', type: 'ai_outputParser', index: 0 }]] },

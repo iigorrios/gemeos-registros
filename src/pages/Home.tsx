@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { BabyAvatar } from '../components/BabyAvatar'
 import { BabyTabs } from '../components/BabyTabs'
 import { EventIcon } from '../components/EventIcon'
+import { MilkGauge } from '../components/MilkGauge'
 import { endSleep } from '../components/EventForm'
 import { ErrorState, LoadingBlock, Spinner } from '../components/ui'
 import { StopIcon } from '../components/icons'
@@ -143,6 +144,13 @@ export function Home() {
           <LastRow kind="note" label="Última anotação" event={summary.last.note} />
         </div>
       </section>
+
+      <MilkGauge
+        totalMl={summary.totalMl}
+        totalBreastMin={summary.totalBreastMin}
+        ultimaMedida={summary.last.growth}
+        onRegistrarPeso={() => create('growth')}
+      />
 
       {/* Atalhos */}
       <section>

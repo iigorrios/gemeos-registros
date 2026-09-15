@@ -85,8 +85,39 @@ IA e grava nas mesmas tabelas que o app usa.
 - **`raw_message_id`** agora é preenchido: a mensagem bruta é salva antes dos
   eventos, e o id dela liga cada registro à mensagem de origem — é o que desenha
   o selo verde do WhatsApp no histórico do app.
+- **Duas barreiras contra realimentação.** A confirmação vai para o mesmo grupo
+  que o fluxo escuta, então a UAZAPI dispara webhook para ela também. Sem
+  proteção o robô lê a própria confirmação, entende como uma mamada e grava de
+  novo — foi o que gerou 32 notificações em sequência (e 31 mamadas falsas no
+  banco). O nó **Não é Mensagem do Robô** corta isso por dois caminhos
+  redundantes: ignora o que veio com `wasSentByApi` e qualquer texto que
+  contenha o marcador da confirmação. O teste é `wasSentByApi`, nunca `fromMe`
+  — as mensagens do Igor também vêm com `fromMe`, porque a instância é o número
+  dele.
+- **Sem reprocessar a mesma mensagem**: `gemeos_raw_messages.wa_message_id`
+  guarda o id da UAZAPI (com índice único), e o nó **Já Processada?** para o
+  fluxo se o webhook chegar repetido.
 - O JSON é gerado por [`n8n/gerar-workflow.mjs`](n8n/gerar-workflow.mjs), que
   valida as conexões e falha se algum segredo escapar para dentro do arquivo.
+  O marcador da confirmação é uma constante só, usada tanto para montar a
+  mensagem quanto para filtrá-la — e há teste amarrando os dois, para o loop não
+  voltar se alguém mudar o texto.
+
+## Alerta de consumo de leite
+
+A Home mostra quanto leite o bebê tomou hoje em relação a **165 ml/kg/dia**
+(constante `ML_POR_KG_DIA` em
+[`src/components/MilkGauge.tsx`](src/components/MilkGauge.tsx)), usando o peso
+da medição mais recente. A barra muda de cor conforme se aproxima: azul até
+70%, âmbar em "chegando perto", laranja em "quase no limite" e vermelho acima
+de 100% — o card inteiro ganha fundo colorido e o ícone vira um aviso.
+
+Duas ressalvas que aparecem na própria tela:
+
+- **só a mamadeira entra na conta** — mamada no seio não tem volume medido, então
+  o percentual subestima o consumo de quem mama no peito;
+- **sem peso registrado não há cálculo**: em vez de inventar um número, o card
+  vira um atalho para registrar a medida.
 
 ## Fuso horário
 
