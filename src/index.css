@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --c-canvas: 255 245 248;
+    --c-surface: 255 255 255;
+    --c-surface-2: 253 242 246;
+    --c-line: 241 230 236;
+    --c-ink: 15 23 42;
+    --c-ink-soft: 100 116 139;
+    --c-ink-faint: 148 163 184;
+  }
+
+  .dark {
+    --c-canvas: 10 14 23;
+    --c-surface: 20 26 38;
+    --c-surface-2: 28 36 51;
+    --c-line: 37 48 74;
+    --c-ink: 232 238 248;
+    --c-ink-soft: 148 163 184;
+    --c-ink-faint: 100 116 139;
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-canvas text-ink font-sans antialiased;
+    /* Leve gradiente rosado no topo, como no mockup. */
+    background-image: radial-gradient(120% 60% at 50% 0%, rgb(var(--c-surface-2)) 0%, rgb(var(--c-canvas)) 60%);
+    background-attachment: fixed;
+    min-height: 100dvh;
+  }
+
+  /* Respeita o notch/barra de gestos no modo standalone. */
+  #root {
+    min-height: 100dvh;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    font: inherit;
+  }
+
+  /* O ícone nativo do datetime-local some no escuro; deixa visível. */
+  .dark input[type='datetime-local']::-webkit-calendar-picker-indicator,
+  .dark input[type='date']::-webkit-calendar-picker-indicator {
+    filter: invert(0.75);
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-3xl bg-surface shadow-card border border-line/70;
+  }
+
+  .field {
+    @apply w-full rounded-2xl border border-line bg-surface-2/60 px-4 py-3 text-ink
+      placeholder:text-ink-faint outline-none transition
+      focus:border-transparent focus:ring-2 focus:ring-sky-400/60 dark:bg-surface-2;
+  }
+
+  .label {
+    @apply mb-1.5 block text-sm font-semibold text-ink-soft;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-3 font-bold
+      transition active:scale-[.98] disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .chip {
+    @apply rounded-full px-3.5 py-1.5 text-sm font-bold transition active:scale-95;
+  }
+
+  .safe-bottom {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px));
+  }
+
+  .safe-top {
+    padding-top: calc(env(safe-area-inset-top, 0px));
+  }
+}
